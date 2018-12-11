@@ -1,0 +1,46 @@
+Format: 1.8
+Date: Sun, 16 Jul 2017 09:47:04 +0200
+Source: dh-ocaml
+Binary: dh-ocaml
+Built-For-Profiles: nobiarch nocheck nodoc
+Architecture: all
+Version: 1.1.0
+Distribution: unstable
+Urgency: medium
+Maintainer: Debian OCaml Maintainers <debian-ocaml-maint@lists.debian.org>
+Changed-By: Stéphane Glondu <glondu@debian.org>
+Description:
+ dh-ocaml   - helper tools for maintaining OCaml-related Debian packages
+Closes: 830282 862777 868470
+Changes:
+ dh-ocaml (1.1.0) unstable; urgency=medium
+ .
+   [ Mehdi Dogguy ]
+   * Minor simplifications in dom-new-git-repo
+   * Use gbp pq now that it exists (also, in stable)
+   * Use gbp-clone to clone git repos and track relevant branches
+   * Use new dispatch address for git commit notifications
+ .
+   [ Ralf Treinen ]
+   * dh_ocamlinit manpage: document prefixes OPT, BYTE, DYN
+   * dom-new-git-repo: replace git-import-orig by gbp import-orig
+     (Closes: #862777)
+ .
+   [ Johannes Schauer ]
+   * dh_ocamlinit: also check for ocamlopt when filtering DYN lines
+ .
+   [ Stéphane Glondu ]
+   * Fix incorrect usage of doit (Closes: #868470)
+   * Fix reproducible build (Closes: #830282)
+   * Bump debhelper compat to 10
+   * Bump Standards-Version to 4.0.0
+   * Update Vcs-*
+Checksums-Sha1:
+ dca5fed753cc78f7c465779bff73ac4067b9bc71 26228 dh-ocaml_1.1.0_all.deb
+ 85c6388045b2ef857a27e04a534cb1eeb8192bd1 5405 dh-ocaml_1.1.0_amd64.buildinfo
+Checksums-Sha256:
+ 5a62bd827ebd43645c273c69deae70c5b4f8b4631bc74b8e53faf53d8c360f33 26228 dh-ocaml_1.1.0_all.deb
+ f10a9da1b93df70f61096a409fd914f7936bc793b9f0ceb1a9a14b3b249fc277 5405 dh-ocaml_1.1.0_amd64.buildinfo
+Files:
+ 5b76fee34f618e16923b6e2a76bb35f7 26228 ocaml extra dh-ocaml_1.1.0_all.deb
+ 3b1715093b6d5ee6fe83a29a45ff4b2d 5405 ocaml extra dh-ocaml_1.1.0_amd64.buildinfo

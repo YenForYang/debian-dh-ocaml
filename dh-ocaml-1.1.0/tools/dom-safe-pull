@@ -1,0 +1,78 @@
+#!/usr/bin/perl -w
+#
+# Description: safely pull all branches of a Git repository
+#
+# Copyright © 2009 Stéphane Glondu <steph@glondu.net>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+# 02110-1301 USA.
+#
+
+sub update_remotes () {
+    for (`git remote`) {
+        chomp;
+        print "Fetching $_...\n";
+        system("git fetch $_") == 0
+            or die "Could not fetch remote $_";
+    }
+}
+
+sub get_remote ($) {
+    my $branch = shift;
+    my $remote = `git config --get "branch.${branch}.remote"`;
+    chomp $remote;
+    if ($remote) {
+        my $merge = `git config --get "branch.${branch}.merge"`;
+        chomp $merge;
+        $merge =~ s@^refs/heads/@@;
+        return "$remote/$merge";
+    } else {
+        return undef;
+    }
+}
+
+sub update_if_fastforward ($) {
+    my $branch = shift;
+    system("git checkout $branch") == 0 or die();
+    if (my $remote = get_remote($branch)) {
+        my $theirs = 0, $ours = 0;
+        for (`git rev-list --left-right "${branch}...${remote}" --`) {
+            $theirs++ if /^>/;
+            $ours++ if /^</;
+        }
+        if ($ours == 0) {
+            system("git merge ${remote}") == 0 or die();
+        } elsif ($theirs > 0) {
+            die "E: ${branch} has diverged from ${remote}, fix manually!\nE: Maybe you should use 'git rebase ${remote}'\n";
+        } else {
+            print "I: ${branch} is ahead of ${remote} by ${ours} commits\n";
+        }
+    }
+}
+
+my $current = `git log -1 --pretty="%H"`;
+chomp $current;
+update_remotes();
+for (`git branch`) {
+    chomp;
+    if (s/^\*\s+//) {
+        # we will update the current branch at the end
+        $current = $_ unless /no branch/;
+    } else {
+        s/^\s+//;
+        update_if_fastforward($_);
+    }
+}
+update_if_fastforward($current);

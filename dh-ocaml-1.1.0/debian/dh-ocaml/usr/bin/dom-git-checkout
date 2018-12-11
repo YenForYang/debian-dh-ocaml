@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+
+REMOTE_BRANCHES="upstream pristine-tar"
+
+PACKAGE="$1"
+PROTOCOL="git+ssh"
+
+if [ "$1" = "--no-ssh" ] ; then
+  PACKAGE="$2"
+  PROTOCOL="git"
+fi
+
+if [ -z "$PACKAGE" ] ; then
+  echo "Usage: dom-git-checkout [ --no-ssh ] PKGNAME"
+  exit 1
+fi
+
+REPODIR="git/pkg-ocaml-maint/packages/$PACKAGE.git"
+
+echo "I: cloning remote repository"
+gbp clone --pristine-tar "$PROTOCOL://git.debian.org/$REPODIR"
+
+echo "I: all done, enjoy."

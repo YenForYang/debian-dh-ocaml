@@ -1,0 +1,12 @@
+./debhelper/dh_ocaml.1
+./debhelper/dh_ocamlclean.1
+./debhelper/dh_ocamldoc.1
+./debhelper/dh_ocamlinit.1
+./debhelper/ocaml-lintian.1
+./debhelper/ocaml-md5sums.1
+./manpages/dom-apply-patches.1
+./manpages/dom-git-checkout.1
+./manpages/dom-mrconfig.1
+./manpages/dom-new-git-repo.1
+./manpages/dom-safe-pull.1
+./manpages/dom-save-patches.1

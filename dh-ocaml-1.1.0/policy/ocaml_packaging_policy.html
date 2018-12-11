@@ -1,0 +1,612 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Debian OCaml Packaging Policy</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /></head><body><div class="book"><div class="titlepage"><div><div><h1 class="title"><a id="idm1"></a>Debian <span class="command"><strong>OCaml</strong></span> Packaging Policy</h1></div><div><div class="author"><h3 class="author"></h3><div class="affiliation"><span class="orgname">The Debian OCaml Task Force<br /></span><div class="address"><p><code class="email">&lt;<a class="email" href="mailto:debian-ocaml-maint@lists.debian.org">debian-ocaml-maint@lists.debian.org</a>&gt;</code></p></div></div></div></div><div><p class="releaseinfo">Revision 0.8.0</p></div><div><p class="copyright">Copyright © 2002-2015 Mehdi Dogguy, Stephane Glondu, Sylvain Le Gall, Sven Luther, Samuel Mimram, Ralf Treinen, Stefano Zacchiroli</p></div><div><div class="legalnotice"><a id="idm20"></a><p>
+    This manual is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation, either version
+    3 of the License, or (at your option) any later version.
+  </p><p>
+    This is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+    the GNU General Public License for more details.
+  </p><p>
+    A copy of the GNU General Public License is available as <a class="ulink" href="file:///usr/share/common-licenses/GPL-3" target="_top"><code class="filename">/usr/share/common-licenses/GPL-3</code></a>
+    on Debian GNU/Linux systems or on the World Wide Web at <a class="ulink" href="http://www.gnu.org/copyleft/gpl.html" target="_top">The GNU Public
+      Licence</a>.
+  </p></div></div></div><hr /></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="preface"><a href="#idm27">Conventions used in this document</a></span></dt><dt><span class="chapter"><a href="#generalities">1. Generalities about <span class="command"><strong>OCaml</strong></span> packages in Debian</a></span></dt><dd><dl><dt><span class="section"><a href="#name-ocaml">The name of the game</a></span></dt><dt><span class="section"><a href="#bytecode-native">Bytecode and native code</a></span></dt><dt><span class="section"><a href="#compiler-overview">Overview of the OCaml compilers</a></span></dt><dd><dl><dt><span class="section"><a href="#byte-native-compilers">Bytecode and native code compilers</a></span></dt><dt><span class="section"><a href="#files">Files used and produced by the OCaml compilers</a></span></dt></dl></dd><dt><span class="section"><a href="#idm140">Building packages using OCaml</a></span></dt><dd><dl><dt><span class="section"><a href="#idm142">Findlib and ocamlfind</a></span></dt><dt><span class="section"><a href="#idm150">The OCaml system in Debian</a></span></dt><dt><span class="section"><a href="#general:build-dependencies">Choosing the right build dependencies</a></span></dt><dt><span class="section"><a href="#general:dependencies">Putting the right binary dependencies</a></span></dt><dt><span class="section"><a href="#dh-ocaml">Dh_ocaml</a></span></dt></dl></dd><dt><span class="section"><a href="#idm242">Integrating OCaml packages in Debian</a></span></dt><dd><dl><dt><span class="section"><a href="#idm244">Location of OCaml directories</a></span></dt><dt><span class="section"><a href="#archive-section">Debian archive section</a></span></dt><dt><span class="section"><a href="#doc-base">Documentation</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#progpack">2. Packaging OCaml programs</a></span></dt><dd><dl><dt><span class="section"><a href="#idm266">Creating packages for OCaml programs</a></span></dt><dt><span class="section"><a href="#bytecode-prog">Bytecode packages</a></span></dt><dt><span class="section"><a href="#native-prog">Native versions of programs</a></span></dt><dt><span class="section"><a href="#bytecode-native-prog">Bytecode and native versions of programs</a></span></dt></dl></dd><dt><span class="chapter"><a href="#libpack">3. Packaging OCaml libraries</a></span></dt><dd><dl><dt><span class="section"><a href="#idm321">Creating packages for OCaml libraries</a></span></dt><dt><span class="section"><a href="#library-path">Paths for libraries</a></span></dt><dt><span class="section"><a href="#META">Providing <code class="filename">META</code> files</a></span></dt><dt><span class="section"><a href="#camlp4-path"><span class="application">Camlp4</span>/<span class="application">Camlp5</span></a></span></dt><dt><span class="section"><a href="#documentation">Documentation</a></span></dt></dl></dd><dt><span class="appendix"><a href="#appendix">A. Appendix</a></span></dt><dd><dl><dt><span class="section"><a href="#liblocal-path">Locally installing OCaml programs and libraries</a></span></dt></dl></dd></dl></div><div class="list-of-tables"><p><strong>List of Tables</strong></p><dl><dt>1.1. <a href="#idm75">OCaml compilers</a></dt></dl></div><div class="list-of-examples"><p><strong>List of Examples</strong></p><dl><dt>3.1. <a href="#idm352">Dependency from a -dev package to its companion shared
+            library stub package (if any), from the
+            <span class="application">pcre-ocaml</span> package</a></dt></dl></div><div class="preface"><div class="titlepage"><div><div><h1 class="title"><a id="idm27"></a>Conventions used in this document</h1></div></div></div><p>
+	[ocaml-version] stands for the current upstream version of the
+	OCaml system (for instance, 4.02.1).
+      </p></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a id="generalities"></a>Chapter 1. Generalities about <span class="command"><strong>OCaml</strong></span> packages in Debian</h1></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="#name-ocaml">The name of the game</a></span></dt><dt><span class="section"><a href="#bytecode-native">Bytecode and native code</a></span></dt><dt><span class="section"><a href="#compiler-overview">Overview of the OCaml compilers</a></span></dt><dd><dl><dt><span class="section"><a href="#byte-native-compilers">Bytecode and native code compilers</a></span></dt><dt><span class="section"><a href="#files">Files used and produced by the OCaml compilers</a></span></dt></dl></dd><dt><span class="section"><a href="#idm140">Building packages using OCaml</a></span></dt><dd><dl><dt><span class="section"><a href="#idm142">Findlib and ocamlfind</a></span></dt><dt><span class="section"><a href="#idm150">The OCaml system in Debian</a></span></dt><dt><span class="section"><a href="#general:build-dependencies">Choosing the right build dependencies</a></span></dt><dt><span class="section"><a href="#general:dependencies">Putting the right binary dependencies</a></span></dt><dt><span class="section"><a href="#dh-ocaml">Dh_ocaml</a></span></dt></dl></dd><dt><span class="section"><a href="#idm242">Integrating OCaml packages in Debian</a></span></dt><dd><dl><dt><span class="section"><a href="#idm244">Location of OCaml directories</a></span></dt><dt><span class="section"><a href="#archive-section">Debian archive section</a></span></dt><dt><span class="section"><a href="#doc-base">Documentation</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="name-ocaml"></a>The name of the game</h2></div></div></div><p>
+      The correct name of the language is
+      <span class="emphasis"><em><span class="command"><strong>OCaml</strong></span></em></span>. Other
+      spellings/capitalizations like <span class="quote">“<span class="quote">Objective Caml</span>”</span>, <span class="quote">“<span class="quote">ocaml</span>”</span>,
+      <span class="quote">“<span class="quote">OCAML</span>”</span>, <span class="quote">“<span class="quote">O'Caml</span>”</span> should be avoided
+      when talking about the OCaml project, the system, or
+      the programing language.
+    </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="bytecode-native"></a>Bytecode and native code</h2></div></div></div><p>
+      The OCaml compilers can produce two kinds of executables:
+      bytecode and native. Native executables are usual ELF executables
+      produced for a particular CPU architecture, while pure bytecode
+      executables are written in a language which can only be run on a
+      OCaml bytecode interpreter. A pure bytecode executable starts with a
+      magic string invoking the interpreter, so that bytecode
+      executables can just be invoked like native executables. There are also
+      <span class="quote">“<span class="quote">custom</span>”</span> bytecode executables, which embed a bytecode program along
+      with a bytecode interpreter; these files are ELF executables. OCaml
+      compilers to native code are not provided for every
+      architecture.  On a Debian system, the list of architectures for
+      which the currently installed version of the OCaml system
+      provides compilation to native code can be found in the file
+      <code class="filename">/usr/lib/ocaml/native-archs</code>.
+    </p><p>
+      Native executables are in general faster to execute than
+      bytecode executables since they are compiled specifically for an
+      architecture. Bytecode executables are smaller than native code
+      executables. If considering only one process the advantage in
+      size is annihilated by the need for the OCaml runtime system
+      for executing bytecode, however there is an advantage when
+      running several bytecode processes in parallel since the runtime
+      system can then be shared.
+    </p><p>
+      Pure bytecode executables have the advantage of being portable, which
+      means that a pure bytecode executable can usually be run without having to be
+      recompiled on any architecture for which an OCaml bytecode
+      interpreter is available. For Debian, this has the advantage
+      that packages containing only bytecode executables have
+      <code class="code">Architecture=all</code>, which reduces archive space and
+      auto-builder load.  It also reduces download and installation
+      size for users in case they install several bytecode packages.
+    </p><p>
+      An important decision to take when building a Debian package is
+      whether to support bytecode, native code, or both. We aim to
+      support development both of bytecode and native code
+      applications, hence libraries should be distributed both in
+      bytecode and native code (see the <a class="ulink" href="#libpack" target="_top">section on
+      library packaging</a>). For packages containing executables,
+      the rule is:
+      
+      </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p> If the execution of the program requires a
+	lot of CPU power then the executables in the package should be
+	compiled to native code on architectures where this is
+	possible, and to bytecode elsewhere.  Typical examples are
+	coq, or edos-distcheck. See the <a class="ulink" href="#native-prog" target="_top">section on native code
+	packages</a>.</p></li><li class="listitem"><p> If the execution of the program is very fast
+	on typical application cases then the program contained in the
+	package should be compiled to bytecode. Typical examples are
+	hevea, or headache. See the <a class="ulink" href="#bytecode-prog" target="_top">section on bytecode
+	packages</a>.</p></li><li class="listitem"><p> Only in special cases, for instance when both
+	versions provide different features, should a package contain
+	programs both compiled to bytecode and native code.  See the
+	<a class="ulink" href="#bytecode-native-prog" target="_top">section on combined
+	bytecode and native code packages</a>. </p></li></ul></div><p>
+    </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="compiler-overview"></a>Overview of the OCaml compilers</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="byte-native-compilers"></a>Bytecode and native code compilers</h3></div></div></div><p>
+	The <span class="package">ocaml-native-compilers</span> package contains
+	the OCaml compiler executables built in native mode:
+	<span class="command"><strong>ocamlc.opt</strong></span>, which produces bytecode, and
+	<span class="command"><strong>ocamlopt.opt</strong></span>, which produces native
+	code. Since the OCaml compilers are themselves written in
+	OCaml this package exists only on architectures where
+	compilation to native code is supported.
+      </p><p>
+	The <span class="package">ocaml-nox</span> package contains the OCaml
+	compiler executables built in bytecode mode:
+	<span class="command"><strong>ocamlc</strong></span>, which produces bytecode, and on
+	architectures where compilation to native code is supported
+	the compiler <span class="command"><strong>ocamlopt</strong></span>, which produces
+	native code. It is important to understand that on
+	architectures where compilation to native code is supported
+	<span class="emphasis"><em>both</em></span> packages contain compilers from
+	OCaml to both bytecode and native code, the difference lies in
+	the nature (installation size and execution speed) of the
+	compiler executables.
+      </p><div class="table"><a id="idm75"></a><p class="title"><strong>Table 1.1. OCaml compilers</strong></p><div class="table-contents"><table class="table" summary="OCaml compilers" border="1"><colgroup><col /><col /><col /></colgroup><thead><tr><th> </th><th>Compiles to bytecode</th><th>Compiles to native code</th></tr></thead><tbody><tr><td>Compiler executable in bytecode</td><td><span class="command"><strong>ocamlc</strong></span></td><td><span class="command"><strong>ocamlopt</strong></span></td></tr><tr><td>Compiler executable in native code</td><td><span class="command"><strong>ocamlc.opt</strong></span></td><td><span class="command"><strong>ocamlopt.opt</strong></span></td></tr></tbody></table></div></div><br class="table-break" /><p>
+	See <a class="xref" href="#bytecode-native" title="Bytecode and native code">the section called “Bytecode and native code”</a> on a discussion whether
+	to produce native code or bytecode. 
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="files"></a>Files used and produced by the OCaml compilers</h3></div></div></div><p>
+	The <span class="command"><strong>OCaml</strong></span> toolchain can produce or use the following kind of files:
+	</p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+	      pure bytecode executables (they can be recognized since they start
+	      with the shebang line <code class="code">#!/usr/bin/ocamlrun</code>)
+	    </p></li><li class="listitem"><p>
+	      bytecode executables linked in <span class="emphasis"><em>custom
+	      mode</em></span>.  They are generated by
+	      <span class="command"><strong>ocamlc</strong></span> when the
+	      <code class="option">-custom</code> flag is given at link
+	      time. Those executables are in ELF format and include
+	      both the final bytecode and the bytecode
+	      interpreter. The <span class="command"><strong>strip</strong></span> command should never
+	      be invoked on them since it will remove the bytecode
+	      part.  Bytecode executables linked in custom mode are
+	      depreciated and should be avoided.
+	    </p></li><li class="listitem"><p>native executables (in ELF format)</p></li><li class="listitem"><p>bytecode libraries (<code class="filename">*.cma, *.a</code>)</p></li><li class="listitem"><p>native libraries (<code class="filename">*.cmxa</code>)</p></li><li class="listitem"><p>
+	      shared libraries (for C bindings) (<code class="filename">dll*.so</code>,
+	      <code class="filename">lib*.so</code>)
+	    </p></li><li class="listitem"><p>
+	      static libraries (for C bindings) (<code class="filename">lib*.a</code>)
+	    </p></li><li class="listitem"><p>bytecode object files (<code class="filename">*.cmo</code>)</p></li><li class="listitem"><p>native object files (<code class="filename">*.cmx, *.o</code>)</p></li><li class="listitem"><p>native plugin object files (<code class="filename">*.cmxs</code>)</p></li><li class="listitem"><p>
+	      configuration files for handling libraries with <span class="command"><strong>ocamlfind</strong></span>
+	      (<code class="filename">META</code>)
+	    </p></li></ul></div><p>
+      </p></div></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm140"></a>Building packages using OCaml</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm142"></a>Findlib and ocamlfind</h3></div></div></div><p>The Debian OCaml Task Force has chosen to fully support the
+      <span class="application">findlib</span> library. This is a suite of
+      tools and libraries that help to manage OCaml libraries. This software is not
+      specific to Debian and works on all platforms where OCaml is
+      available. Through the years, this has become the de facto standard 
+      when relying on external libraries. The main frontend is called
+      <span class="command"><strong>ocamlfind</strong></span> and provided by the package <span class="package">ocaml-findlib</span>.
+      </p><p>Even though compiling OCaml projects in Debian is still possible
+        without <span class="command"><strong>ocamlfind</strong></span> it is highly recommended to use it.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm150"></a>The OCaml system in Debian</h3></div></div></div><p><a id="package-type"></a>
+      There are three categories of OCaml packages in Debian:
+        </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Development packages contain OCaml objects required
+            for the development or compilation of OCaml programs, or
+            specifically for the creation of Debian packages
+            containing OCaml programs.
+            </p></li><li class="listitem"><p>Runtime packages contain OCaml objects necessary to run
+            compiled programs. A runtime package is always associated
+            with a development package.
+            </p></li><li class="listitem"><p>Simple binary packages contain everything that does
+            not fall into the two former categories. This includes
+            bytecode and native executable of application programs,
+            documentation, etc.
+            </p></li></ul></div><p>
+      </p><p>
+      The <span class="package">ocaml</span> package depends on all the basic
+      packages needed to develop programs with OCaml. More
+      specifically, the packaging of OCaml is split into smaller
+      packages. The packages with suffix <span class="package">-nox</span>
+      contain libraries that do not need the X Window system (i.e.,
+      for programs that don't use the <code class="code">Graphics</code>
+      module).  Here is the list of binary
+      packages into which the OCaml system is organized:
+  
+      </p><div class="orderedlist"><ol class="orderedlist" type="1"><li class="listitem"><p>
+            The <span class="package">ocaml</span> and <span class="package">ocaml-nox</span>
+            packages contain the compiler and its libraries. They can be
+            both considered as development packages.
+            </p></li><li class="listitem"><p>
+          The <span class="package">ocaml-native-compilers</span> package
+          contains the OCaml compilers built in native mode
+          (<span class="command"><strong>ocamlc.opt</strong></span> and
+          <span class="command"><strong>ocamlopt.opt</strong></span>).
+          </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>
+            The compilers themselves are built in native mode,
+            nonetheless, both compilers for compiling toward bytecode
+            and native code are contained in this package.
+            </p></div></li><li class="listitem"><p>
+              The <span class="package">ocaml-base</span> and
+              <span class="package">ocaml-base-nox</span> packages contain the
+              interpreter and runtime libraries needed by bytecode
+              programs compiled with OCaml (in particular, the package
+              <span class="package">ocaml-base-nox</span> contains the
+              <span class="package">ocamlrun</span> program). They can both be
+              considered as runtime packages associated to
+              <span class="package">ocaml</span>, resp.
+              <span class="package">ocaml-nox</span>.
+          </p><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Note</h3><p>
+              <span class="package">ocaml-base-nox</span> contains also OCaml
+              interface objects <code class="filename">*.cmi</code>, which are
+              normally only in development packages because they are needed to
+              run the <span class="command"><strong>ocaml</strong></span> toplevel from the package
+              <span class="package">ocaml-interp</span>.
+            </p></div></li><li class="listitem"><p>
+            The <span class="package">ocaml-interp</span> package contains the
+            toplevel system for OCaml (<span class="package">ocaml</span>) which
+            provides for an interactive interpreter of the language.
+          </p></li><li class="listitem"><p>
+            The <span class="package">ocaml-mode</span> package contains the
+            OCaml Emacs mode. This is the original Emacs mode provided
+            with the OCaml upstream distribution, not to be confused
+            with the tuareg Emacs mode which is in the package
+            <span class="package">tuareg-mode</span>.
+          </p></li><li class="listitem"><p>
+            The <span class="package">ocaml-source</span> package contains the
+            sources of the OCaml compiler.
+          </p></li><li class="listitem"><p>
+            The <span class="package">ocaml-compiler-libs</span> package contains
+            some internal libraries of the OCaml compiler (needed only in
+            very rare cases, e.g. for developing languages which reuse
+            OCaml internals).
+          </p></li></ol></div><p>
+    </p><p>
+      Since libraries produced by OCaml are binary incompatible when
+      compiled with different releases of OCaml, versioned virtual
+      packages are also provided by packages at items (1), (2), (6)
+      and (7): <span class="package">ocaml-[ocaml-version]</span>,
+      <span class="package">ocaml-nox-[ocaml-version]</span>, etc.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="general:build-dependencies"></a>Choosing the right build dependencies</h3></div></div></div><p>
+      Compiling with native code versions of the compilers is generally faster
+      than with compilers in bytecode. Unfortunately, the
+      <span class="package">ocaml-native-compilers</span> package is not available on
+      every architecture. <span class="emphasis"><em>Packages should therefore never depend
+      directly on this package.</em></span> In order to build big programs and
+      benefit from this natively built compiler, packages should depend on
+      <span class="package">ocaml-best-compilers</span> which itself depends on
+      <span class="package">ocaml-native-compilers</span> where available and on
+      <span class="package">ocaml</span> elsewhere. Since it is a virtual package, it
+      cannot be a versioned dependency. The version dependency should thus be
+      carried by the <span class="package">ocaml</span> dependency. Note that dependency
+      on <span class="package">ocaml-best-compilers</span> is only necessary for really big
+      programs for which compilation takes a lot of resources. For most small
+      programs the compilers from the <span class="package">ocaml-nox</span> package are
+      perfectly sufficient, and faster to install in a build environment than
+      compiler executables in native code.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="general:dependencies"></a>Putting the right binary dependencies</h3></div></div></div><p>
+      Bytecode is specific to an upstream version of the OCaml
+      system. Therefore, any package containing bytecode has to depend
+      directly or indirectly on the packages providing the OCaml
+      runtime system in precisely the version for which it was
+      compiled (for instance,
+      <span class="package">ocaml-base-[ocaml-version]</span>.) This is in
+      particular the case for bytecode programs, but it is also the
+      case for native code programs on the architectures on which
+      there is no native code OCaml compiler, and on which the program
+      will be actually compiled to bytecode (see the <a class="ulink" href="#native-prog" target="_top">section on packaging native code
+      programs</a>). The exact dependencies of libraries packages
+      are discussed in the <a class="ulink" href="#libpack" target="_top">chapter on library
+      packaging</a>.
+    </p><p>
+      In order for a package to be easily rebuild, or even binNMUed,
+      in case of a transition from one OCaml version to another, these
+      dependencies must not be hardcoded in
+      <code class="filename">debian/control</code>. Instead, substitution
+      variables must be used which are instantiated from the
+      <code class="filename">debian/rules</code> file. See the discussion on
+      build systems in the Debian OCaml Developers Reference for a
+      discussion how this can be achieved.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="dh-ocaml"></a>Dh_ocaml</h3></div></div></div><p>The Debian OCaml Task Force has created a system to compute dependencies
+    between <span class="command"><strong>OCaml</strong></span> packages and to ensure type-safe linking.  It
+    requires to use new substitution variables in
+    <code class="filename">debian/control</code>:
+    </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>Use the <code class="code">${ocaml:Depends}</code> substitution variable
+	in the field <code class="code">Depends</code>.</p></li><li class="listitem"><p>Add a field <code class="code">Provides: ${ocaml:Provides}</code> in
+        development and runtime packages.</p></li></ul></div><p>
+      More detailed information about this work can be found <a class="ulink" href="http://upsilon.cc/~zack/stuff/ocaml-debian-deps.pdf" target="_top">here</a>.
+    </p></div></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm242"></a>Integrating OCaml packages in Debian</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm244"></a>Location of OCaml directories</h3></div></div></div><p>
+      The root of all installed OCaml libraries is the
+      <span class="emphasis"><em>OCaml standard library directory</em></span>, which
+	is <code class="filename">/usr/lib/ocaml</code>. This location can be obtained from the
+	OCaml compiler by invoking it as <strong class="userinput"><code>ocamlc
+	-where</code></strong>.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="archive-section"></a>Debian archive section</h3></div></div></div><p>
+	Packages intended for the development of OCaml programs or
+	packages, as well as packages necessary for the execution of
+	OCaml code (like runtime systems or libraries) should have
+	their section set to <code class="code">ocaml</code>.
+      </p><p>
+	End user applications that are not specifically aiming at
+	OCaml development or execution support but just happen to be
+	implemented in OCaml should have their section set according
+	to their application domain (<code class="code">games</code>,
+	<code class="code">science</code>, etc.). General development tools that are
+	not specific to OCaml development go into section
+	<code class="code">devel</code> (example: headache).
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="doc-base"></a>Documentation</h3></div></div></div><p>
+	Documentation relevant to programming in OCaml should be
+	registered with doc-base in Section
+	<code class="code">Programming/OCaml</code>. This is the case for API
+	documentation generated using <span class="command"><strong>ocamldoc</strong></span>. See the <a class="ulink" href="#documentation" target="_top">section on generating
+	documentation</a>.
+      </p></div></div></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a id="progpack"></a>Chapter 2. Packaging OCaml programs</h1></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="#idm266">Creating packages for OCaml programs</a></span></dt><dt><span class="section"><a href="#bytecode-prog">Bytecode packages</a></span></dt><dt><span class="section"><a href="#native-prog">Native versions of programs</a></span></dt><dt><span class="section"><a href="#bytecode-native-prog">Bytecode and native versions of programs</a></span></dt></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm266"></a>Creating packages for OCaml programs</h2></div></div></div><p>
+      The source package should, if possible, use the name of the upstream
+      package without modifications.
+    </p><p>
+      Packages containing executables (as opposed to libraries) may be
+      produced by compiling to bytecode, native code, or both. See
+      <a class="ulink" href="#bytecode-native" target="_top">this discussion of which mode to
+      choose</a>.
+    </p><p>
+      Package containing only bytecode executable, native executable or data 
+      are simple binary package, as explained <a class="ulink" href="#package-type" target="_top">
+      previously</a>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="bytecode-prog"></a>Bytecode packages</h2></div></div></div><p>
+      A bytecode package has all its binaries compiled into
+      bytecode. It depends on a package containing the OCaml runtime
+      system. As a consequence, such a package has its architecture
+      field set to <code class="code">all</code>.
+    </p><p>
+      All bytecode executables should be linked dynamically against
+      the shared libraries for C bindings, to not bloat the
+      archive. That said, upstream authors often favor statically
+      linked bytecode executables (<span class="command"><strong>ocamlc</strong></span> option
+      <code class="option">-custom</code>), because in this case they don't need
+      to worry about the presence of the dll stub libraries.  This is
+      not a valid reason to use statically linked bytecode in a Debian
+      package where package dependencies can fix this problem.
+    </p><p>
+      A bytecode package must depend on the runtime package
+      that is required to run it. Typically, it should depend on
+      <span class="package">ocaml-base-nox-[ocaml-version]</span> (or <span class="package">ocaml-base-[ocaml-version]</span>, if if the program
+      uses the <code class="code">Graphics</code> module).
+      It can also depends on the virtual
+      <span class="package">libXXX-ocaml-byte-ABCD</span> provided by the
+      runtime package <span class="package">libXXX-ocaml</span> (see <a class="ulink" href="#general:dependencies" target="_top">the section on binary
+      dependencies</a>).
+    </p><p>
+      A bytecode package must build-depend-indep on <span class="package">ocaml-nox</span> (or
+      <span class="package">ocaml</span> if the program uses the <code class="code">Graphics</code> module).
+    </p><p>
+      Bytecode programs which are compiled by <strong class="userinput"><code>ocamlc
+      -custom</code></strong> must not be stripped. In particular, their
+      package should be excluded from the <span class="command"><strong>dh_strip</strong></span>
+      script. When compiled this way, an ELF executable is generated
+      containing the ocaml interpreter, and the bytecode of the
+      program in a section which is removed when the program is
+      stripped.  For more information, see the bug <a class="ulink" href="http://bugs.debian.org/256900" target="_top">256900</a>. <span class="emphasis"><em>Custom
+      bytecode executable is a deprecated feature of OCaml -- for now
+      they still exist but should be avoided</em></span>.
+    </p><p>
+      Bytecode programs should not be compiled for debugging,
+      i.e. they should not be compiled using the <code class="option">-g</code>
+      option to <span class="command"><strong>ocamlc</strong></span>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="native-prog"></a>Native versions of programs</h2></div></div></div><p>
+      Native OCaml compilers are not available on all
+      architecures. For architectures missing native compiler, a
+      bytecode version of the program should be provided.  Native code
+      packages are specific to an architecture, that is they have
+      <code class="code">Architecture=any</code> in the source package.
+    </p><p>
+      The <code class="filename">debian/rules</code> file should build the native
+      code executable if supported on the architecture it is built on,
+      and fall back to building the bytecode version if no working
+      native code compiler is available. As a consequence, the rules of
+      <a class="xref" href="#bytecode-prog" title="Bytecode packages">the section called “Bytecode packages”</a> also apply here.
+    </p><p>
+      It is safe to consider that detection of native architecture means
+      availability of <span class="command"><strong>ocamlopt</strong></span> or <span class="command"><strong>ocamlopt.opt</strong></span> when 
+      building.
+    </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="bytecode-native-prog"></a>Bytecode and native versions of programs</h2></div></div></div><p>
+      This should be done only under exceptional circumstances.
+      Packages providing both native and bytecode versions of a
+      program <span class="command"><strong>prog</strong></span> usually name them respectively
+      <span class="command"><strong>prog.opt</strong></span> and <span class="command"><strong>prog.byte</strong></span> and
+      provide a symbolic link <span class="command"><strong>prog</strong></span> to the best
+      available version (generally <span class="command"><strong>prog.opt</strong></span>).
+      Please consult the rules of <a class="xref" href="#bytecode-prog" title="Bytecode packages">the section called “Bytecode packages”</a>
+      and  <a class="xref" href="#native-prog" title="Native versions of programs">the section called “Native versions of programs”</a>.
+    </p></div></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a id="libpack"></a>Chapter 3. Packaging OCaml libraries</h1></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="#idm321">Creating packages for OCaml libraries</a></span></dt><dt><span class="section"><a href="#library-path">Paths for libraries</a></span></dt><dt><span class="section"><a href="#META">Providing <code class="filename">META</code> files</a></span></dt><dt><span class="section"><a href="#camlp4-path"><span class="application">Camlp4</span>/<span class="application">Camlp5</span></a></span></dt><dt><span class="section"><a href="#documentation">Documentation</a></span></dt></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm321"></a>Creating packages for OCaml libraries</h2></div></div></div><p>
+      A package which provides an OCaml library called <code class="filename">xxx</code> should be split as follows:
+
+      </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+            For libraries which are not purely programmed in OCaml (e.g. C
+            bindings), <code class="filename">libxxx-ocaml</code> should provide the
+            shared library stubs (<code class="filename">dll*.so</code>), and all other
+            stuff needed to run a bytecode executable that links into this
+            library. It should depend on <span class="package">ocaml-base-[ocaml-version]</span> (or
+            <span class="package">ocaml-base-nox-[ocaml-version]</span>) as well as any other library needed. The
+            <span class="emphasis"><em>versioned</em></span> dependency on <span class="package">ocaml-base</span> is
+            important since libraries are binary incompatible between releases
+            of OCaml.  </p><p> <code class="filename">libxxx-ocaml</code>
+            packages should be in <code class="code">Section: ocaml</code>.
+          </p><p>
+            If the library provides native plugins (<code class="filename">*.cmxs</code>)
+            or is meant to be dynamically loaded using the <code class="code">Dynlink</code>
+            library, those plugins, relevant <code class="filename">*.cmo</code> or
+            <code class="filename">*.cma</code> files, and the <code class="filename">META</code>
+            file referencing them should also be provided by this runtime package.
+          </p></li><li class="listitem"><p>
+            <code class="filename">libxxx-ocaml-dev</code> should provide the rest of
+            the library package, in fact anything needed to develop programs
+            using the library. If the library uses other libraries or C
+            libraries then this package should depend on them.  </p><p>
+
+          <code class="filename">libxxx-ocaml-dev</code> should depend on its
+          companion <code class="filename">libxxx-ocaml</code> package (if any).
+          The reason is that at compile time the <span class="command"><strong>OCaml</strong></span> compiler
+          will try to load the shared library stubs, aborting the
+          compilation in case of failure. Hence the development package
+          is useless if the corresponding stub package is missing. To
+          ensure compatibility the dependency among the two packages
+          should be strictly versioned. In order for the resulting
+          packages to be <a class="ulink" href="http://wiki.debian.org/binNMU" target="_top">binNMU safe</a> this
+          requirement states that the dependency should make use of a
+          <code class="code">${binary:Version}</code> substitution variable.
+
+          </p><div class="example"><a id="idm352"></a><p class="title"><strong>Example 3.1. Dependency from a -dev package to its companion shared
+            library stub package (if any), from the
+            <span class="application">pcre-ocaml</span> package</strong></p><div class="example-contents"><pre class="programlisting">
+  Package: libpcre-ocaml
+  Architecture: any
+  Section: ocaml
+  Depends: <span class="package">ocaml-base-nox-[ocaml-version]</span>, ${shlibs:Depends}, ${misc:Depends}
+  ...
+
+  Package: libpcre-ocaml-dev
+  Architecture: any
+  Section: ocaml
+  Depends: <span class="package">ocaml-nox-[ocaml-version]</span>, libpcre3-dev (&gt;= 4.5), <span class="emphasis"><em>libpcre-ocaml (= ${binary:Version})</em></span>, ${misc:Depends}
+  Suggests: ocaml-findlib (&gt;= 1.1)
+  ...
+            </pre></div></div><p><br class="example-break" />
+
+          </p><p>
+          <code class="filename">libxxx-ocaml-dev</code> packages should be in <code class="code">Section: ocaml</code>
+          </p><p>
+          All <span class="command"><strong>OCaml</strong></span> bytecode libraries
+          (<code class="filename">*.cma</code>) and bytecode object files
+          (<code class="filename">*.cmo</code>) should be compiled for
+          debugging, i.e. they should be compiled passing the
+          <code class="option">-g</code> option to <span class="command"><strong>ocamlc</strong></span> (or
+          <span class="command"><strong>ocamlc.opt</strong></span>).
+          </p></li></ul></div><p>
+    </p><p>
+      Optionally, two other packages may be created:
+      </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+            <code class="filename">libxxx-ocaml-bin</code> may include binaries provided
+            by the library source package if they are numerous. This package
+            should conform with the same regulations as other packages
+            providing ocaml programs. It is only needed to split off this
+            package if there is a significant number of programs included in
+            the library, if not, the programs should go into
+            <code class="filename">libxxx-ocaml-dev</code>.  </p></li><li class="listitem"><p>
+            <code class="filename">libxxx-ocaml-doc</code> may include any kind of
+            documentation provided by the library source package or as separate
+            documentation. Again, if there is only little documentation, they
+            should go with the <code class="filename">-dev</code> package.  </p></li></ul></div><p>
+    </p><p>
+    It is recommended that libraries use the <code class="option">-pack</code> option to
+    pack all the modules provided by the library into one module.  We don't
+    think upstream libraries will be moving to this scheme anytime soon (unless
+    we actively lobby for it) so this is just a recommendation for now.
+    </p><p>
+    It is recommended that each library package ships a
+    <code class="filename">META</code> file in order to make the library usable via
+    <code class="filename">ocamlfind</code> (see the Debian package
+    <code class="filename">ocaml-findlib</code>). See <a class="xref" href="#META" title="Providing META files">the section called “Providing <code class="filename">META</code> files”</a> for more
+    information on this.</p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="library-path"></a>Paths for libraries</h2></div></div></div><p>
+      Libraries should be installed in <code class="filename"><code class="filename">/usr/lib/ocaml</code>/</code> or
+      in a subdirectory of this directory. This includes in particular bytecode
+      libraries (<code class="filename">*.cma</code>), native libraries
+      (<code class="filename">*.cmxa, *.a</code>), native plugins (<code class="filename">*.cmxs</code>), bytecode object files
+      (<code class="filename">*.cmo</code>), native object files
+      (<code class="filename">*.cmx, *.o</code>), static libraries (<code class="filename">*.a</code>)
+      and <code class="filename">META</code> files. The only exception to this rule is
+      for shared libraries (<code class="filename">dll*.so</code>) which should be
+      installed in <code class="filename"><code class="filename">/usr/lib/ocaml</code>/stublibs</code>, as can it be
+      seen in the <code class="filename"><code class="filename">/usr/lib/ocaml</code>/ld.conf</code> file.  </p><p>
+      If upstream developers already use a subdirectory of the OCaml standard
+      library path then this path should be preserved in the Debian package but
+      made relative to the standard library path of OCaml. Before using the
+      provided subdirectory, packagers should obviously check if there is no
+      subdirectory name clash with another OCaml library.  </p><p>
+      If upstream developers do not use this scheme then packagers are
+      encouraged not to install this library in the standard library
+      directory. They should create at least a subdirectory per source
+      package (in order to avoid name clashes). Packagers should also
+      consider to do a larger separation by creating a subdirectory
+      per binary package (in order to avoid META name clash). A
+      suggested rule to choose the name for this subdirectory is to use
+      either the package name provided by the META of the upstream, or
+      the name of the library itself.  </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="META"></a>Providing <code class="filename">META</code> files</h2></div></div></div><p>
+      The <code class="filename">ocaml-findlib</code> provides a tool (called
+      <code class="filename">ocamlfind</code>) to handle OCaml libraries and store
+      information about libraries dependencies, compiler flags, linking
+      options, etc. Meta informations regarding a library are contained in
+      files (usually one for each library), named <code class="filename">META</code>
+      files, contained in the library directory. The distribution of
+      <code class="filename">META</code> files is the best way to make more easy to use
+      the Debian-specific organization of libraries. Packages distributing
+      <code class="filename">META</code> files should suggest the use of <span class="command"><strong>ocamlfind</strong></span>,
+      that is have a <code class="varname">Suggest: ocaml-findlib</code>.
+    </p><p>
+      By default, <span class="command"><strong>ocamlfind</strong></span> will look for <code class="filename">META</code> in this order:
+      </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><code class="filename"><code class="filename">/usr/lib/ocaml/METAS</code>/</code></p></li><li class="listitem"><p><code class="filename"><code class="filename">/usr/lib/ocaml</code>/package/</code></p></li></ul></div><p>
+    </p><p>
+      If a library package creates its own subdirectory
+      <code class="filename"><code class="filename">/usr/lib/ocaml</code>/package/</code> then the META file
+      should be stored in that directory.
+    </p><p>
+      The naming scheme of <code class="filename">META</code> is pretty simple.
+      </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+            If the <code class="filename">META</code> file is placed in the subdirectory
+            of the package then it should be called <code class="filename">META</code>.
+          </p></li><li class="listitem"><p>
+          If the <code class="filename">META</code> file is placed in
+          <code class="filename"><code class="filename">/usr/lib/ocaml/METAS</code>/</code> then it should be called
+          <code class="filename">META.packagename</code>, where
+          <code class="filename">packagename</code> is the name of the subdirectory
+          where the library is stored.  </p></li></ul></div><p>
+    </p><p>
+      For example, the <code class="filename">META</code> file for the lablgtk library
+      is named <code class="filename">META</code> and has path
+      <code class="filename"><code class="filename">/usr/lib/ocaml</code>/lablgtk/META</code>, where
+      <code class="filename"><code class="filename">/usr/lib/ocaml</code></code> is the main OCaml installation
+      directory and <code class="filename">lablgtk</code> is the lablgtk library
+      directory.  </p><p>
+      If upstream doesn't provide a <code class="filename">META</code> then
+      packagers are encouraged to create one. In this case, the META
+      file should contain a comment like this, so that developers will
+      know that they shouldn't count on the availability of a META file
+      on non-Debian machines:
+      </p><pre class="programlisting">
+	# This META file is delivered by the Debian distribution.
+      </pre><p>
+      Furthermore, the <code class="filename">META</code> file should be sent to the
+      upstream authors in order to have it included in future versions
+      of the upstream source. For more information about
+      <code class="filename">META</code> files see the <a class="ulink" href="http://www.ocaml-programming.de/packages/documentation/findlib/" target="_top">Findlib
+      manual</a>, at the several META files provided by other
+      packages (e.g. <code class="filename">lablgtk</code>,
+      <code class="filename">pxp</code>, <code class="filename">pcre</code>,
+      <code class="filename">netstring</code>, <code class="filename">lablgl</code>,
+      ...) or ask on the debian-ocaml-maint mailing list for help.
+      </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="camlp4-path"></a><span class="application">Camlp4</span>/<span class="application">Camlp5</span></h2></div></div></div><p> Actually, <span class="application">Camlp4</span> extensions should be processed just like standard
+    OCaml libraries. In particular, they should provide a META file.
+    The syntax extension should be contained in a <code class="varname">syntax</code> sub
+    package.
+    </p><p>
+    The naming convention of the package is to use the same naming as with
+    standard package, replacing <code class="varname">-ocaml-</code> by the syntax
+    extension name, <code class="varname">-camlp4-</code>. 
+    </p><p>
+    If a package contains at the same time syntax extension and libraries then it
+    is up to the maintainer to choose the most relevant name for the package.
+    Whatever the name chosen for the package, the other name should be a
+    <code class="varname">Provide</code> of the package.
+    </p><p>
+    For example, consider the package <span class="application">sexplib310</span>.
+    It provides a syntax extension and a library, which is the runtime support  
+    of the additional function generated by the syntax extension. Since the most
+    common use of <span class="application">sexplib310</span> is through its syntax 
+    extension, the package is name
+    <span class="application">libsexplib-camlp4-dev</span> and it also provide
+    <span class="application">libsexplib-ocaml-dev</span>.  
+    </p><p>
+    <span class="application">Camlp5</span> is an alternate pretty-printer and preprocessor for OCaml
+    (which is compatible with pre-3.10.0 version). Syntax extension are
+    handled through exactly the same scheme as for <span class="application">Camlp4</span> except that
+    package name use <code class="varname">-camlp5-</code> rather than
+    <code class="varname">-camlp4-</code>.
+  </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="documentation"></a>Documentation</h2></div></div></div><p>
+      The documentation is a joint effort of  The Debian OCaml Task Force and upstream. 
+      There are many ways to have documentation:
+      </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>header files (<code class="filename">*.mli</code>),</p></li><li class="listitem"><p>source files (<code class="filename">*.ml</code>),</p></li><li class="listitem"><p>specific documentation provided by the upstream,</p></li><li class="listitem"><p>OCamldoc generated documentation.</p></li></ul></div><p>
+    </p><p>
+      This documentation should be browsable by different means, from the most
+      simple to the most complex one. At least, they should all be readable with
+      a simple text editor. Specific and <span class="command"><strong>ocamldoc</strong></span> generated documentations
+      should be provided in HTML format.
+    </p><p>
+      You can generate <span class="command"><strong>ocamldoc</strong></span>-specific documentation by using
+      the <code class="option">-dump</code> option of this command. By using this, you dump the
+      intermediate representation of the document that will be generated by ocamldoc.
+      This can be used to generate HTML documentation and manpages, by reloading this
+      file (using <code class="option">-load</code>).
+    </p></div></div><div class="appendix"><div class="titlepage"><div><div><h1 class="title"><a id="appendix"></a>Appendix A. Appendix</h1></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="#liblocal-path">Locally installing OCaml programs and libraries</a></span></dt></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="liblocal-path"></a>Locally installing OCaml programs and libraries</h2></div></div></div><p>
+        Locally installed files are files that are installed directly by
+        the system administrator, in contrast to files installed through Debian
+        packages. Installation and use of locally installed OCaml related
+        programs is out of the scope of this document. However, in order to
+        have it work with a standard Debian installation, a local system
+        administrator should follow these guidelines:
+        </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+              Executable files should be installed
+              in <code class="filename">/usr/local/bin</code>.
+            </p></li><li class="listitem"><p>
+              Shared libraries (for C bindings) should be installed
+              in <code class="filename">/usr/local/lib/ocaml/stublibs/</code>
+            </p></li><li class="listitem"><p>
+              Basically, every other file should be installed
+              in <code class="filename">/usr/local/lib/ocaml/</code>. This
+              includes in particular bytecode libraries
+              (<code class="filename">*.cma</code>), native libraries
+              (<code class="filename">*.cmxa</code>), bytecode object files
+              (<code class="filename">*.cmo</code>), native object files
+              (<code class="filename">*.cmx</code>), native plugin object files 
+              (<code class="filename">*.cmxs</code>), static libraries
+              (<code class="filename">*.a</code>) and <code class="filename">META</code>
+              files.
+            </p></li></ul></div><p>
+      </p><p>
+        The default configuration of <code class="filename">ocamlfind</code> (the OCaml
+        library manager recommended in Debian) first looks for a local
+        installation of libraries and then for libraries installed by Debian
+        packages.
+      </p><div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Warning</h3><p>
+          The <code class="varname">+</code> preceding any library in the
+          <code class="option">-I</code> of <span class="command"><strong>ocamlc</strong></span> or
+          <span class="command"><strong>ocamlopt</strong></span> won't be expanded to the local standard
+          library path. You need to specify the path entirely.
+        </p></div></div></div></div></body></html>

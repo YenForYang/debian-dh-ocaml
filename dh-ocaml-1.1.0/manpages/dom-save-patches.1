@@ -1,0 +1,105 @@
+'\" t
+.\"     Title: \fBdom-save-patches\fR
+.\"    Author: Mehdi Dogguy <mehdi@debian.org>
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: Jul 10, 2009
+.\"    Manual: User Commands
+.\"    Source: dh-ocaml
+.\"  Language: English
+.\"
+.TH "\FBDOM\-SAVE\-PATCHE" "1" "Jul 10, 2009" "dh\-ocaml" "User Commands"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+dom-save-patches \- Creates a patch for each commit in branch \fBpatch\-queue\fR
+.SH "SYNOPSIS"
+.HP \w'\fBdom\-save\-patches\fR\ 'u
+\fBdom\-save\-patches\fR
+.SH "DESCRIPTION"
+.PP
+\fBdom\-save\-patches\fR
+follows these steps:
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+verify the existence of a branch
+\fBpatch\-queue\fR,
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+move to the
+\fBmaster\fR
+branch and generates a patch for each commit in branch
+\fBpatch\-queue\fR
+starting from
+\fBupstream\fR
+branch, from which
+\fBpatch\-queue\fR
+was created,
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+update the file
+\fBdebian/patches/series\fR,
+.RE
+.sp
+.RS 4
+.ie n \{\
+\h'-04'\(bu\h'+03'\c
+.\}
+.el \{\
+.sp -1
+.IP \(bu 2.3
+.\}
+delete the branch
+\fBpatch\-queue\fR\&.
+.RE
+.SH "SEE ALSO"
+.PP
+\fB dom-apply-patches \fR(1)
+.SH "AUTHOR"
+.PP
+\fBMehdi Dogguy\fR <\&mehdi@debian\&.org\&>
+.RS 4
+.RE
+.SH "COPYRIGHT"
+.br
+Copyright \(co 2009 Mehdi Dogguy
+.br

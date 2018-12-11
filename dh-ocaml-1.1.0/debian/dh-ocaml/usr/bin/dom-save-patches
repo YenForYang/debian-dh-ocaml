@@ -1,0 +1,3 @@
+#!/bin/sh
+
+exec gbp pq export --drop

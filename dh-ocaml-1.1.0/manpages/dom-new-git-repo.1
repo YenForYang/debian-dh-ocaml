@@ -1,0 +1,72 @@
+'\" t
+.\"     Title: \fBdom-new-git-repo\fR
+.\"    Author: Mehdi Dogguy <mehdi@debian.org>
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: Jul 10, 2009
+.\"    Manual: User Commands
+.\"    Source: dh-ocaml
+.\"  Language: English
+.\"
+.TH "\FBDOM\-NEW\-GIT\-RE" "1" "Jul 10, 2009" "dh\-ocaml" "User Commands"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+dom-new-git-repo \- Creates a new Git repository in pkg\-ocaml\-maint space
+.SH "SYNOPSIS"
+.HP \w'\fBdom\-new\-git\-repo\fR\ 'u
+\fBdom\-new\-git\-repo\fR name [tarball]
+.SH "DESCRIPTION"
+.PP
+Creates a new git repository belonging to the pkg\-ocaml\-maint project on alioth\&.debian\&.org\&. (pkg\-ocaml\-maint is a collaborative package maintenance project, aimed at maintaining packages related to the OCaml programming language\&.)
+.PP
+After repository creation, notifications (IRC, commit mailing list) are setup and the needed changes are pushed to alioth\&.
+.PP
+If the option
+<term>\fB\-\-notifications\fR</term>
+is passed instead of a tarball name, and the command is executed outside of a Git repository, then the only effect is to create a new empty Git repository (if it doesn\*(Aqt exist) and to set up notifications\&.
+.SH "OPTIONS"
+.PP
+\fBname\fR
+.RS 4
+Package name
+.RE
+.PP
+\fBtarball\fR
+.RS 4
+Upstream tarball
+.RE
+.SH "ENVIRONMENT"
+.PP
+\fBDOM_ALIOTH_USER\fR
+.RS 4
+Alioth username
+.RE
+.SH "SEE ALSO"
+.PP
+\fB dom-git-checkout \fR(1)
+.SH "AUTHOR"
+.PP
+\fBMehdi Dogguy\fR <\&mehdi@debian\&.org\&>
+.RS 4
+.RE
+.SH "COPYRIGHT"
+.br
+Copyright \(co 2009 Mehdi Dogguy
+.br

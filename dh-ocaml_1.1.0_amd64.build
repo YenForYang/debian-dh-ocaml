@@ -1,0 +1,262 @@
+ dpkg-buildpackage -D -us -uc -ui -b -Jauto -Pnobiarch,nocheck,nodoc
+dpkg-buildpackage: info: source package dh-ocaml
+dpkg-buildpackage: info: source version 1.1.0
+dpkg-buildpackage: info: source distribution unstable
+dpkg-buildpackage: info: source changed by St√©phane Glondu <glondu@debian.org>
+ dpkg-source --before-build .
+dpkg-buildpackage: info: host architecture amd64
+ fakeroot debian/rules clean
+dh clean
+   dh_auto_clean
+	make -j8 clean
+make[1]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0'
+make -C policy/ clean
+make[2]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+rm -f ocaml_packaging_policy.html
+rm -f ocaml_packaging_policy.txt
+rm -f ocaml_packaging_reference.html
+rm -f ocaml_packaging_reference.txt
+rm -f *.check
+make[2]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+make	-C debhelper/ clean
+make[2]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/debhelper'
+rm -f dh_ocaml.1 dh_ocamlinit.1 dh_ocamlclean.1 dh_ocamldoc.1 ocaml-md5sums.1 ocaml-lintian.1
+make[2]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/debhelper'
+make	-C manpages/ clean
+make[2]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/manpages'
+rm -f *.1
+make[2]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/manpages'
+make[1]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0'
+   dh_clean
+FAKEROOTKEY=900446842 LD_LIBRARY_PATH=:/opt/intel/lib/intel64_lin:/opt/intel/tbb/lib/intel64/gcc4.7 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libfakeroot/libfakeroot-sysv.so debian/rules clean
+ debian/rules build
+dh build
+   dh_update_autotools_config
+   dh_autoreconf
+   dh_auto_configure
+   dh_auto_build
+	make -j8
+make[1]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0'
+make -C policy/ ocaml_packaging_policy.txt
+make -C policy/ ocaml_packaging_policy.html
+make -C policy/ ocaml_packaging_reference.txt
+make -C policy/ ocaml_packaging_reference.html
+make[2]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+xmllint --noout --nonet --xinclude --postvalid reference-svn.xml
+make[2]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+xmllint --noout --nonet --xinclude --postvalid reference-svn.xml
+xmllint --noout --nonet --xinclude --postvalid ocaml_packaging_policy.xml
+xmllint --noout --nonet --xinclude --postvalid ocaml_packaging_policy.xml
+make[2]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+xmllint --noout --nonet --xinclude --postvalid reference-svn.xml
+make[2]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+xmllint --noout --nonet --xinclude --postvalid reference-svn.xml
+xmllint --noout --nonet --xinclude --postvalid chapter-progpack.xml
+xmllint --noout --nonet --xinclude --postvalid chapter-progpack.xml
+touch chapter-progpack.check
+touch reference-svn.check
+touch chapter-progpack.check
+xmllint --noout --nonet --xinclude --postvalid ocaml_packaging_policy.xml
+touch reference-svn.check
+touch reference-svn.check
+xmllint --noout --nonet --xinclude --postvalid reference-git.xml
+touch reference-svn.check
+xmllint --noout --nonet --xinclude --postvalid appendix-local.xml
+xmllint --noout --nonet --xinclude --postvalid reference-git.xml
+xmllint --noout --nonet --xinclude --postvalid ocaml_packaging_policy.xml
+xmllint --noout --nonet --xinclude --postvalid reference-git.xml
+touch reference-git.check
+touch appendix-local.check
+xmllint --noout --nonet --xinclude --postvalid reference-transitions.xml
+xmllint --noout --nonet --xinclude --postvalid copyright.xml
+touch reference-git.check
+xmllint --noout --nonet --xinclude --postvalid appendix-local.xml
+touch reference-git.check
+xmllint --noout --nonet --xinclude --postvalid reference-transitions.xml
+touch reference-transitions.check
+touch copyright.check
+xmllint --noout --nonet --xinclude --postvalid legal.xml
+xmllint --noout --nonet --xinclude --postvalid reference-git.xml
+touch appendix-local.check
+touch reference-transitions.check
+xmllint --noout --nonet --xinclude --postvalid legal.xml
+xmllint --noout --nonet --xinclude --postvalid copyright.xml
+touch legal.check
+touch reference-git.check
+xmllint --noout --nonet --xinclude --postvalid legal.xml
+touch legal.check
+touch copyright.check
+xmllint --noout --nonet --xinclude --postvalid reference-resources.xml
+xmllint --noout --nonet --xinclude --postvalid reference-resources.xml
+xmllint --noout --nonet --xinclude --postvalid reference-resources.xml
+touch legal.check
+xmllint --noout --nonet --xinclude --postvalid appendix-local.xml
+touch reference-resources.check
+xmllint --noout --nonet --xinclude --postvalid authors.xml
+touch reference-resources.check
+xmllint --noout --nonet --xinclude --postvalid authors.xml
+touch reference-resources.check
+xmllint --noout --nonet --xinclude --postvalid reference-resources.xml
+touch authors.check
+xmllint --noout --nonet --xinclude --postvalid ocaml_packaging_reference.xml
+touch appendix-local.check
+touch authors.check
+xmllint --noout --nonet --xinclude --postvalid authors.xml
+xmllint --noout --nonet --xinclude --postvalid ocaml_packaging_reference.xml
+touch reference-resources.check
+xmllint --noout --nonet --xinclude --postvalid ocaml_packaging_reference.xml
+touch ocaml_packaging_policy.check
+xmllint --noout --nonet --xinclude --postvalid authors.xml
+touch ocaml_packaging_policy.check
+xmllint --noout --nonet --xinclude --postvalid scratch.xml
+touch authors.check
+xmllint --noout --nonet --xinclude --postvalid chapter-generalities.xml
+touch authors.check
+xmllint --noout --nonet --xinclude --postvalid ocaml_packaging_reference.xml
+touch ocaml_packaging_policy.check
+xmllint --noout --nonet --xinclude --postvalid reference-diy.xml
+touch ocaml_packaging_policy.check
+touch scratch.check
+xmllint --noout --nonet --xinclude --postvalid scratch.xml
+xmllint --noout --nonet --xinclude --postvalid chapter-libpack.xml
+touch chapter-generalities.check
+xmllint --noout --nonet --xinclude --postvalid reference-faq.xml
+touch reference-diy.check
+xmllint --noout --nonet --xinclude --postvalid reference-cdbs.xml
+touch chapter-libpack.check
+xmllint --noout --nonet --xinclude --postvalid reference-dh.xml
+touch scratch.check
+xmllint --noout --nonet --xinclude --postvalid chapter-generalities.xml
+touch reference-faq.check
+xmllint --noout --nonet --xinclude --postvalid reference-faq.xml
+touch reference-cdbs.check
+xmllint --noout --nonet --xinclude --postvalid reference-cdbs.xml
+touch reference-dh.check
+xmllint --noout --nonet --xinclude --postvalid reference-dh.xml
+touch chapter-generalities.check
+xmllint --noout --nonet --xinclude --postvalid scratch.xml
+touch reference-faq.check
+xmllint --noout --nonet --xinclude --postvalid scratch.xml
+touch reference-cdbs.check
+touch reference-dh.check
+touch scratch.check
+touch scratch.check
+touch ocaml_packaging_reference.check
+xsltproc --xinclude --nonet -o ocaml_packaging_policy.html \
+  /usr/share/xml/docbook/stylesheet/nwalsh/xhtml/docbook.xsl \
+  ocaml_packaging_policy.xml
+touch ocaml_packaging_reference.check
+xsltproc --xinclude --nonet -o ocaml_packaging_reference.html \
+  /usr/share/xml/docbook/stylesheet/nwalsh/xhtml/docbook.xsl \
+  ocaml_packaging_reference.xml
+touch ocaml_packaging_reference.check
+xsltproc --xinclude --nonet -o ocaml_packaging_reference.html \
+  /usr/share/xml/docbook/stylesheet/nwalsh/xhtml/docbook.xsl \
+  ocaml_packaging_reference.xml
+touch ocaml_packaging_reference.check
+xsltproc --xinclude --nonet -o ocaml_packaging_policy.html \
+  /usr/share/xml/docbook/stylesheet/nwalsh/xhtml/docbook.xsl \
+  ocaml_packaging_policy.xml
+make[2]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+LC_ALL=C.UTF-8 lynx -nolist -dump ocaml_packaging_policy.html > ocaml_packaging_policy.txt
+make[2]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+make[2]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+LC_ALL=C.UTF-8 lynx -nolist -dump ocaml_packaging_reference.html > ocaml_packaging_reference.txt
+make[2]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/policy'
+make -C debhelper/ all
+make[2]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/debhelper'
+for i in dh_ocaml.1 dh_ocamlinit.1 dh_ocamlclean.1 dh_ocamldoc.1 ocaml-md5sums.1 ocaml-lintian.1; do \
+	pod2man ${i%.1} > $i; \
+done
+dh_ocaml around line 501: Non-ASCII character seen before =encoding in 'StÈphane'. Assuming UTF-8
+POD document had syntax errors at /usr/bin/pod2man line 71.
+make[2]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/debhelper'
+make -C manpages
+make[2]: Entering directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/manpages'
+xmllint --nonet --noout --postvalid --xinclude dom-apply-patches.xml
+xmllint --nonet --noout --postvalid --xinclude dom-git-checkout.xml
+xmllint --nonet --noout --postvalid --xinclude dom-mrconfig.xml
+xmllint --nonet --noout --postvalid --xinclude dom-new-git-repo.xml
+xmllint --nonet --noout --postvalid --xinclude dom-safe-pull.xml
+xmllint --nonet --noout --postvalid --xinclude dom-save-patches.xml
+dom-new-git-repo.xml:57: element para: validity error : Element term is not declared in para list of possible children
+Document dom-new-git-repo.xml does not validate
+xsltproc --output dom-mrconfig.1 --nonet --xinclude \
+  /usr/share/xml/docbook/stylesheet/nwalsh/manpages/docbook.xsl \
+  dom-mrconfig.xml
+make[2]: [Makefile:8: dom-new-git-repo.1] Error 3 (ignored)
+xsltproc --output dom-new-git-repo.1 --nonet --xinclude \
+  /usr/share/xml/docbook/stylesheet/nwalsh/manpages/docbook.xsl \
+  dom-new-git-repo.xml
+xsltproc --output dom-apply-patches.1 --nonet --xinclude \
+  /usr/share/xml/docbook/stylesheet/nwalsh/manpages/docbook.xsl \
+  dom-apply-patches.xml
+xsltproc --output dom-git-checkout.1 --nonet --xinclude \
+  /usr/share/xml/docbook/stylesheet/nwalsh/manpages/docbook.xsl \
+  dom-git-checkout.xml
+xsltproc --output dom-safe-pull.1 --nonet --xinclude \
+  /usr/share/xml/docbook/stylesheet/nwalsh/manpages/docbook.xsl \
+  dom-safe-pull.xml
+xsltproc --output dom-save-patches.1 --nonet --xinclude \
+  /usr/share/xml/docbook/stylesheet/nwalsh/manpages/docbook.xsl \
+  dom-save-patches.xml
+Note: Writing dom-apply-patches.1
+Element term in namespace '' encountered in para, but no template matches.
+Note: Writing dom-git-checkout.1
+Note: Writing dom-safe-pull.1
+Note: Writing dom-mrconfig.1
+Note: Writing dom-save-patches.1
+Note: Writing dom-new-git-repo.1
+sed -i 's/CopyrightCopyright/Copyright/' dom-apply-patches.1
+sed -i 's/CopyrightCopyright/Copyright/' dom-git-checkout.1
+sed -i 's/CopyrightCopyright/Copyright/' dom-safe-pull.1
+sed -i 's/CopyrightCopyright/Copyright/' dom-save-patches.1
+sed -i 's/CopyrightCopyright/Copyright/' dom-mrconfig.1
+sed -i 's/CopyrightCopyright/Copyright/' dom-new-git-repo.1
+make[2]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0/manpages'
+make[1]: Leaving directory '/dev/shm/builddeps/dh-ocaml/dh-ocaml-1.1.0'
+   dh_auto_test
+   create-stamp debian/debhelper-build-stamp
+ fakeroot debian/rules binary
+dh binary
+   dh_testroot
+   dh_prep
+   dh_installdirs
+   dh_auto_install
+   dh_install
+   dh_installdocs
+   dh_installchangelogs
+   dh_installman
+   dh_perl
+   dh_link
+   dh_strip_nondeterminism
+   dh_compress
+   dh_fixperms
+   dh_missing
+   dh_installdeb
+   dh_gencontrol
+dpkg-gencontrol: warning: package dh-ocaml: substitution variable ${perl:Depends} unused, but is defined
+   dh_md5sums
+   dh_builddeb
+dpkg-deb: building package 'dh-ocaml' in '../dh-ocaml_1.1.0_all.deb'.
+FAKEROOTKEY=451385875 LD_LIBRARY_PATH=:/opt/intel/lib/intel64_lin:/opt/intel/tbb/lib/intel64/gcc4.7 LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libfakeroot/libfakeroot-sysv.so debian/rules binary
+ dpkg-genbuildinfo --build=binary
+ dpkg-genchanges --build=binary >../dh-ocaml_1.1.0_amd64.changes
+dpkg-genchanges: info: binary-only upload (no source code included)
+ dpkg-source --after-build .
+dpkg-buildpackage: info: binary-only upload (no source included)
+Now running lintian dh-ocaml_1.1.0_amd64.changes ...
+W: dh-ocaml: priority-extra-is-replaced-by-priority-optional
+W: dh-ocaml: binary-without-manpage usr/bin/dh_ocaml
+W: dh-ocaml: binary-without-manpage usr/bin/dh_ocamlclean
+W: dh-ocaml: binary-without-manpage usr/bin/dh_ocamldoc
+W: dh-ocaml: binary-without-manpage usr/bin/dh_ocamlinit
+W: dh-ocaml: binary-without-manpage usr/bin/dom-apply-patches
+W: dh-ocaml: binary-without-manpage usr/bin/dom-git-checkout
+W: dh-ocaml: binary-without-manpage usr/bin/dom-mrconfig
+W: dh-ocaml: binary-without-manpage usr/bin/dom-new-git-repo
+W: dh-ocaml: binary-without-manpage usr/bin/dom-safe-pull
+W: dh-ocaml: binary-without-manpage usr/bin/dom-save-patches
+W: dh-ocaml: binary-without-manpage usr/bin/ocaml-lintian
+W: dh-ocaml: binary-without-manpage usr/bin/ocaml-md5sums
+Finished running lintian.

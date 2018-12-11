@@ -1,0 +1,564 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /><title>Debian OCaml Packaging Reference</title><meta name="generator" content="DocBook XSL Stylesheets V1.79.1" /></head><body><div class="book"><div class="titlepage"><div><div><h1 class="title"><a id="idm1"></a>Debian <span class="command"><strong>OCaml</strong></span> Packaging Reference</h1></div><div><div class="author"><h3 class="author"></h3><div class="affiliation"><span class="orgname">The Debian OCaml Task Force<br /></span><div class="address"><p><code class="email">&lt;<a class="email" href="mailto:debian-ocaml-maint@lists.debian.org">debian-ocaml-maint@lists.debian.org</a>&gt;</code></p></div></div></div></div><div><p class="releaseinfo">Revision 0.8.0</p></div><div><p class="copyright">Copyright © 2002-2015 Mehdi Dogguy, Stephane Glondu, Sylvain Le Gall, Sven Luther, Samuel Mimram, Ralf Treinen, Stefano Zacchiroli</p></div><div><div class="legalnotice"><a id="idm20"></a><p>
+    This manual is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation, either version
+    3 of the License, or (at your option) any later version.
+  </p><p>
+    This is distributed in the hope that it will be useful, but
+    WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See
+    the GNU General Public License for more details.
+  </p><p>
+    A copy of the GNU General Public License is available as <a class="ulink" href="file:///usr/share/common-licenses/GPL-3" target="_top"><code class="filename">/usr/share/common-licenses/GPL-3</code></a>
+    on Debian GNU/Linux systems or on the World Wide Web at <a class="ulink" href="http://www.gnu.org/copyleft/gpl.html" target="_top">The GNU Public
+      Licence</a>.
+  </p></div></div></div><hr /></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="chapter"><a href="#idm27">1. Common use-cases</a></span></dt><dt><span class="chapter"><a href="#idm34">2. Build systems</a></span></dt><dd><dl><dt><span class="section"><a href="#idm36">Building packages with debhelper tools and dh-ocaml</a></span></dt><dt><span class="section"><a href="#idm57">Building packages with CDBS and the OCaml class</a></span></dt><dt><span class="section"><a href="#idm83">Building packages with dh (debhelper &gt; 7)</a></span></dt></dl></dd><dt><span class="chapter"><a href="#idm99">3. Using a Version Control System</a></span></dt><dd><dl><dt><span class="section"><a href="#idm101">Using Git for packaging</a></span></dt><dd><dl><dt><span class="section"><a href="#idm103">Using Git for packaging</a></span></dt><dt><span class="section"><a href="#idm130">How to obtain a copy of a package's Git repository</a></span></dt><dt><span class="section"><a href="#idm138">Structure of a Git repository</a></span></dt><dt><span class="section"><a href="#idm152">How to add a new package</a></span></dt><dt><span class="section"><a href="#idm164">How to set up your package for use with <span class="application">git-buildpackage</span></a></span></dt><dt><span class="section"><a href="#idm180">How to build a package with <span class="application">git-buildpackage</span></a></span></dt><dt><span class="section"><a href="#idm206">Patches</a></span></dt></dl></dd><dt><span class="section"><a href="#idm240">Using the SVN repository</a></span></dt><dd><dl><dt><span class="section"><a href="#idm242">Use SVN and let your users know about it</a></span></dt><dt><span class="section"><a href="#idm265">How to obtain a copy of the SVN repository</a></span></dt><dt><span class="section"><a href="#idm270">Structure of the SVN repository</a></span></dt><dt><span class="section"><a href="#idm278">How to add a new package to the SVN repository</a></span></dt><dt><span class="section"><a href="#idm291">How to set up your package for use with <span class="application">svn-buildpackage</span></a></span></dt><dt><span class="section"><a href="#idm319">How to build a package with <span class="application">svn-buildpackage</span></a></span></dt><dt><span class="section"><a href="#idm346">dpatch</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#idm357">4. Transitions to new OCaml upstream versions</a></span></dt><dt><span class="appendix"><a href="#resources">A. The Debian OCaml Task Force resources</a></span></dt></dl></div><div class="list-of-examples"><p><strong>List of Examples</strong></p><dl><dt>2.1. <a href="#idm92">A <code class="filename">debian/rules</code> file using <span class="command">dh</span>
+    </a></dt><dt>3.1. <a href="#idm121">Usage example of the Vcs-* fields, from the
+          <span class="application">findlib</span> package
+        </a></dt><dt>3.2. <a href="#idm259">Usage example of the Vcs-* fields, from the
+          <span class="application">findlib</span> package
+        </a></dt></dl></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a id="idm27"></a>Chapter 1. Common use-cases</h1></div></div></div><p>Build checklist</p><p>Build without ocamlopt</p><p>Howto install using ocamlfind</p><p>dh-ocaml stuff: howto use, what he can guess</p><p>need to depend on -dev package outside ocaml package</p></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a id="idm34"></a>Chapter 2. Build systems</h1></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="#idm36">Building packages with debhelper tools and dh-ocaml</a></span></dt><dt><span class="section"><a href="#idm57">Building packages with CDBS and the OCaml class</a></span></dt><dt><span class="section"><a href="#idm83">Building packages with dh (debhelper &gt; 7)</a></span></dt></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm36"></a>Building packages with debhelper tools and dh-ocaml</h2></div></div></div><p>
+        The availability of the native compiler can be tested in the
+        <code class="filename">debian/rules</code> file by testing the
+        possibility of executing
+        <code class="filename">/usr/bin/ocamlopt</code>, and build the bytecode
+        version or the native version of the program according to the
+        result of the test. This is a sample snippet of
+        <code class="filename">debian/rules</code> doing so:
+        </p><pre class="programlisting">
+          build-stamp:
+                  dh_testdir
+
+                  if [ -x /usr/bin/ocamlopt ]; then \
+                          $(MAKE) opt; \
+                  else \
+                          $(MAKE) all; \
+                  fi
+        </pre><p>
+      </p><p>The following is a snippet of a sample
+      <code class="filename">debian/control</code>:
+      </p><pre class="programlisting">
+          Package: spamoracle-byte
+          Architecture: all
+          Depends: ocaml-base-nox-${F:OCamlABI}
+          Provides: spamoracle
+          Conflicts: spamoracle
+          Replaces: spamoracle
+        </pre><p>
+      </p><p>The following its pairing <code class="filename">debian/rules</code> snippet:
+        </p><pre class="programlisting">
+          OCAMLABI := $(shell ocamlc -version)
+          ...
+          binary-indep: build install
+          dh_gencontrol -i -- -VF:OCamlABI="$(OCAMLABI)"
+        </pre><p>
+      </p><p>
+        In the case where there is only one package, which provides
+        either a native version where available or a bytecode version
+        otherwise, the dependency on
+        <code class="varname">ocaml-base-nox-[ocaml-version]</code> should be
+        added only when the package is built in native mode. For
+        example, the <code class="filename">debian/control</code> of
+        <code class="filename">approx</code> contains:
+        </p><pre class="programlisting">
+          Package: approx
+          Architecture: any
+          Depends: ${shlibs:Depends}, ${F:OCamlRun}, adduser, bzip2, curl
+        </pre><p>
+        and the corresponding <code class="filename">debian/rules</code> contains:
+        </p><pre class="programlisting">
+          OCAMLABI = $(shell ocamlc -version)
+          BYTECODE = $(shell [ -x /usr/bin/ocamlopt ] || echo yes)
+          OCAMLRUN = $(if $(BYTECODE),ocaml-base-nox-$(OCAMLABI))
+          ...
+          binary-arch:
+                  ...
+                  dh_gencontrol -- -VF:OCamlRun="$(OCAMLRUN)"
+        </pre><p>
+    </p><p>TODO: section should be simlified by using dh-ocaml</p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm57"></a>Building packages with CDBS and the OCaml class</h2></div></div></div><p>
+    To help maintainers of OCaml-related packages in adhering to this policy, a
+    class for the <a class="ulink" href="http://build-common.alioth.debian.org/" target="_top">CDBS
+      build system</a> has been made available and is shipped as part of
+    the <code class="filename">ocaml-nox</code> package. Please consider using it in your
+    packages at it will both ease your work and permit to perform changes to a
+    wide range of packages acting on a single piece of software (the CDBS class
+    itself).
+  </p><p>
+    To use the class in your package it is enough to include the file
+    <code class="filename">/usr/share/cdbs/1/rules/ocaml.mk</code> from your
+    <code class="filename">debian/rules</code>. If you use debhelper (please do) you
+    should include the OCaml class after the debhelper on. A typical
+    <code class="filename">debian/rules</code> heading for a package using plain Makefile
+    (i.e. no autotools) and dpatch is as follows:
+    </p><pre class="programlisting">
+  #!/usr/bin/make -f
+  include /usr/share/cdbs/1/rules/dpatch.mk
+  include /usr/share/cdbs/1/rules/debhelper.mk
+  include /usr/share/cdbs/1/class/makefile.mk
+  include /usr/share/cdbs/1/rules/ocaml.mk
+    </pre><p>
+    For an example of such a package see the <code class="filename">pcre-ocaml</code>
+    Debian source package.
+  </p><p>
+    A detailed description of how to use the OCaml CDBS class should be provided
+    in this section, but at the time of writing is a future work :-). In the
+    meantime if you know CDBS, the .mk files which compose the OCaml
+    class are well commented and they should give you enough information to
+    customize the build process of your package. The latest version of them is
+    available in the repository of the The Debian OCaml Task Force and can be browsed on the
+    web:
+    </p><div class="variablelist"><dl class="variablelist"><dt><span class="term"><code class="filename"><a class="ulink" href="http://git.debian.org/?p=pkg-ocaml-maint/packages/ocaml.git;a=blob;f=debian/cdbs/ocaml-vars.mk;hb=HEAD" target="_top">ocaml-vars.mk</a></code></span></dt><dd><p>
+            contains (Makefile) convenience variables which can be used in
+            <code class="filename">debian/rules</code>
+          </p></dd><dt><span class="term"><code class="filename"><a class="ulink" href="http://git.debian.org/?p=pkg-ocaml-maint/packages/ocaml.git;a=blob;f=debian/cdbs/ocaml.mk;hb=HEAD" target="_top">ocaml.mk</a></code></span></dt><dd><p>
+            implements the class logic
+          </p></dd></dl></div><p>
+  </p></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm83"></a>Building packages with dh (debhelper &gt; 7)</h2></div></div></div><p>Debhelper provides since version 7 the <span class="command"><strong>dh</strong></span>
+  tool which automatizes in simply and standard cases completely the
+  tasks to be done by <code class="filename">debian/rules</code>, and which
+  provides for various means to adapt to complex or non-standard cases
+  (see <span class="command"><strong>dh(1)</strong></span>). The
+  <span class="package">dh-ocaml</span> package provides since version
+  0.9.0 a <span class="command"><strong>ocaml</strong></span> addon to <span class="command"><strong>dh</strong></span>.</p><div class="example"><a id="idm92"></a><p class="title"><strong>Example 2.1. A <code class="filename">debian/rules</code> file using <span class="command">dh</span>
+    </strong></p><div class="example-contents"><pre class="programlisting">
+#!/usr/bin/make -f
+%:
+        dh $@ --with ocaml
+    </pre><p>
+      This package must build-depend on <code class="code">dh-ocaml (&gt;= 0.9.0)</code>.
+    </p></div></div><br class="example-break" /></div></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a id="idm99"></a>Chapter 3. Using a Version Control System</h1></div></div></div><div class="toc"><p><strong>Table of Contents</strong></p><dl class="toc"><dt><span class="section"><a href="#idm101">Using Git for packaging</a></span></dt><dd><dl><dt><span class="section"><a href="#idm103">Using Git for packaging</a></span></dt><dt><span class="section"><a href="#idm130">How to obtain a copy of a package's Git repository</a></span></dt><dt><span class="section"><a href="#idm138">Structure of a Git repository</a></span></dt><dt><span class="section"><a href="#idm152">How to add a new package</a></span></dt><dt><span class="section"><a href="#idm164">How to set up your package for use with <span class="application">git-buildpackage</span></a></span></dt><dt><span class="section"><a href="#idm180">How to build a package with <span class="application">git-buildpackage</span></a></span></dt><dt><span class="section"><a href="#idm206">Patches</a></span></dt></dl></dd><dt><span class="section"><a href="#idm240">Using the SVN repository</a></span></dt><dd><dl><dt><span class="section"><a href="#idm242">Use SVN and let your users know about it</a></span></dt><dt><span class="section"><a href="#idm265">How to obtain a copy of the SVN repository</a></span></dt><dt><span class="section"><a href="#idm270">Structure of the SVN repository</a></span></dt><dt><span class="section"><a href="#idm278">How to add a new package to the SVN repository</a></span></dt><dt><span class="section"><a href="#idm291">How to set up your package for use with <span class="application">svn-buildpackage</span></a></span></dt><dt><span class="section"><a href="#idm319">How to build a package with <span class="application">svn-buildpackage</span></a></span></dt><dt><span class="section"><a href="#idm346">dpatch</a></span></dt></dl></dd></dl></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm101"></a>Using Git for packaging</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm103"></a>Using Git for packaging</h3></div></div></div><p>
+      This section is still under construction!
+    </p><p>
+      (Hopefully) All OCaml-related Debian packages are maintained using
+      centralized <a class="ulink" href="http://git-scm.com/" target="_top">Git</a>
+      repositories. This practice reduce the efforts needed to contribute
+      work inside The Debian OCaml Task Force and, in case of need, provides a place
+      where to massively perform changes to all OCaml-related Debian
+      packages.
+    </p><p>
+      In the past, we were using Subversion, but we are progressively
+      migrating our packages to Git.
+    </p><p>
+      Debian users can benefit knowing we are using a Git repository
+      (they can for instance subscribe to the RSS feed for changes or
+      have a place where to look for finding patches corresponding to
+      bugs tagged "pending" in the BTS).
+    </p><p>
+      For this reason <span class="emphasis"><em>it is recommended to add the
+      <code class="code">Vcs-Git</code> and <code class="code">Vcs-Browser</code> fields to the
+      <code class="filename">debian/control</code> of packages maintained in
+      The Debian OCaml Task Force Git repository</em></span>. Its name specifies that
+      we are using Git as our Version Control System
+      (<acronym class="acronym">VCS</acronym>); their values are the URLs pointing to
+      the package's repository and to a browsable view of the same
+      directory. See the
+      <a class="ulink" href="http://www.debian.org/doc/developers-reference/best-pkging-practices.html#bpp-vcs" target="_top">Debian
+      Developer's Reference</a> for more information about these
+      fields.
+    </p><p>
+      The general scheme for using the fields are thus:
+  </p><pre class="programlisting">  Vcs-Git: git://git.debian.org/git/pkg-ocaml-maint/packages/<span class="emphasis"><em>PACKAGE_NAME</em></span>.git
+    Vcs-Browser: http://git.debian.org/?p=pkg-ocaml-maint/packages/<span class="emphasis"><em>PACKAGE_NAME</em></span>.git
+  </pre><p>
+      </p><div class="example"><a id="idm121"></a><p class="title"><strong>Example 3.1. Usage example of the Vcs-* fields, from the
+          <span class="application">findlib</span> package
+        </strong></p><div class="example-contents"><pre class="programlisting">  Source: findlib
+    Section: devel
+    Priority: optional
+    Maintainer: Debian OCaml Maintainers &lt;debian-ocaml-maint@lists.debian.org&gt;
+    Uploaders: Stefano Zacchiroli &lt;zack@debian.org&gt;
+    Build-Depends: debhelper (&gt;&gt; 5.0.0), ocaml (&gt;= 3.11.0), camlp4 (&gt;= 3.11.0), m4, gawk | awk, dpatch, cdbs, dh-ocaml
+    Standards-Version: 3.8.0
+    <span class="emphasis"><em>Vcs-Git: git://git.debian.org/git/pkg-ocaml-maint/packages/findlib.git</em></span>
+    <span class="emphasis"><em>Vcs-Browser: http://git.debian.org/?p=pkg-ocaml-maint/packages/findlib.git</em></span>
+    Homepage: http://projects.camlcity.org/projects/findlib.html
+
+    Package: ocaml-findlib
+    Section: devel
+    Architecture: any
+    Depends: ocaml-nox-${F:OCamlABI}, ${shlibs:Depends}, ${misc:Depends}
+    Description: Management tool for OCaml programming language libraries
+    ...
+  </pre></div></div><p><br class="example-break" />
+    </p><p>
+      This document assumes that you have the following packages
+      installed: <code class="filename">git-buildpackage</code>
+      and <code class="filename">pristine-tar</code>.
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm130"></a>How to obtain a copy of a package's Git repository</h3></div></div></div><p>
+        There is one Git repository per package. To get the list of packages managed with git, you
+        can use the following command (your ssh must be configured properly):
+  </p><pre class="programlisting">  ssh git.debian.org ls /git/pkg-ocaml-maint/packages
+  </pre><p>
+
+        You can obtain a copy of the repository for a package with:
+  </p><pre class="programlisting">  checkout-d-o-m-git-repo package
+  </pre><p>
+        The <span class="application">checkout-d-o-m-git-repos</span> script is
+        available in the Subversion repository. You can get a copy with:
+  </p><pre class="programlisting">  svn co svn://svn.debian.org/svn/pkg-ocaml-maint/trunk/projects/git-guide
+  </pre><p>
+        You must be member of the
+        <a class="ulink" href="http://pkg-ocaml-maint.alioth.debian.org/" target="_top">Debian
+        OCaml Task Force</a> in order to have the right to push to the central repository.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm138"></a>Structure of a Git repository</h3></div></div></div><p>
+          We keep all upstream sources under Git control, in a branch
+          called <span class="emphasis"><em>upstream</em></span>. This branch usually
+          consists of successive unpacked upstream tarballs. When
+          importing a new upstream tarball, the following command should
+          be used:
+  </p><pre class="programlisting">  git-import-orig --pristine-tar [--no-dch] &lt;name_version.orig.tar.gz&gt;
+  </pre><p>
+          The <code class="filename">--pristine-tar</code> is mandatory to store
+          information for reconstructing the upstream tarball from the
+          repository. That information is not suited for human use and
+          is stored in the <span class="emphasis"><em>pristine-tar</em></span>
+          branch. Optionally, <code class="filename">--no-dch</code> can be given
+          to automatically update the Debian changelog (without
+          committing it).
+      </p><p>
+        The <span class="emphasis"><em>master</em></span> branch contains upstream sources
+        along with the <code class="filename">debian/</code>
+        directory. <code class="filename">git-import-orig</code> automatically
+        creates a (local) tag in the upstream branch, and
+        merges <span class="emphasis"><em>upstream</em></span>
+        into <span class="emphasis"><em>master</em></span> when importing a new
+        tarball. Changes related to Debian should be done in this
+        branch.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm152"></a>How to add a new package</h3></div></div></div><p>
+          Let's take <span class="application">dose2</span> as an example. The
+          following command (the <span class="application">new-d-o-m-git-repo</span> is available at the same location of <span class="application">checkout-d-o-m-git-repo</span>):
+  </p><pre class="programlisting">  new-d-o-m-git-repo dose2 /some/where/dose2-1.2.tar.gz
+  </pre><p>
+          will create the remote repository on Alioth, set up
+          notifications, and inject the given tarball in the repository
+          in the <span class="emphasis"><em>upstream</em></span> branch
+          (using <code class="filename">pristine-tar</code>). More
+          details <a class="ulink" href="http://wiki.debian.org/Alioth/Git" target="_top">there</a>. You
+          can then check it out and start using it.
+      </p><p>
+        If the tarball name is
+        missing, <span class="application">new-d-o-m-git-repo</span> will
+        check that the current directory is a git repository, and then
+        push it to Alioth.  This allows you to create the repository
+        locally, work on it, and only push it when it is in good
+        shape. It is recommended to check it out after, and use the
+        checked out version, to make sure everything went well, and to
+        have local branches tracking remote ones.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm164"></a>How to set up your package for use with <span class="application">git-buildpackage</span></h3></div></div></div><p>
+        Put the following in <code class="filename">debian/gbp.conf</code>:
+  </p><pre class="programlisting">  # Configuration file for git-buildpackage and friends
+
+    [DEFAULT]
+    # the default branch for upstream sources:
+    upstream-branch = upstream
+    # the default branch for the debian patch:
+    debian-branch = master
+    # use pristine-tar:
+    pristine-tar = True
+  </pre><p>
+          The first two settings are not really useful since they are
+          the defaults, but it might be handy to have them around when
+          working with several
+          branches. The <code class="filename">pristine-tar</code> is necessary
+          if tarballs are imported. Please see
+          the <span class="application">git-buildpackage</span> documentation
+          for complete information.
+      </p><p>
+          If you tried <span class="application">git-buildpackage</span>
+          before writing your <code class="filename">debian/gbp.conf</code>,
+          remember to delete the <code class="filename">.orig</code> tarball, and
+          rebuild <span class="emphasis"><em>after</em></span>
+          writing <code class="filename">debian/gbp.conf</code>. Alternatively,
+          you can invoke <span class="application">git-buildpackage</span>
+          with the <code class="filename">--git-pristine-tar</code> option.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm180"></a>How to build a package with <span class="application">git-buildpackage</span></h3></div></div></div><p>
+          Please refer to the <span class="application">git-builpackage</span>
+          documentation for more complete information. Here is just a
+          quick guide.
+      </p><p>
+          All options, except those starting on <code class="option">--git</code>, are passed to
+          <span class="application">dpkg-buildpackage</span>. Hence, basic
+          usage should be something like this (from the root of the
+          repository): <span class="command"><strong>git-buildpackage -rfakeroot -uc
+          -us</strong></span>. The package will be built in place, and the
+          result will be put in the parent directory.
+      </p><p>
+        <span class="application">git-buildpackage</span> will complain when
+        your repository is not clean. You may use the
+        option <code class="option">--git-ignore-new</code> to override this
+        behaviour.
+      </p><p>
+          If your package is ready for upload you may use
+          the <code class="option">--git-tag</code> option for the final
+          build. This will create a tag in your local repository.
+          Provided you have commited all your changes to the Git
+          repository, this will after a successful build of the package
+          create a tag for the current version.
+      </p><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Tip</h3><p>
+            Tags created by <span class="application">git-import-orig</span>
+            and <span class="application">git-buildpackage</span> are not
+            automatically pushed, you have to push them explicitly with
+            the following command: <span class="command"><strong>git push
+            --tags</strong></span>. Be careful if you use local tags!
+          </p><p>
+            You can add the <span class="command"><strong>--dry-run</strong></span> option
+            to <span class="command"><strong>git push</strong></span> to see what will be done.
+          </p><p>
+            To build with <span class="application">pbuilder</span>
+            (or <span class="application">cowbuilder</span>), use the
+            following:
+  </p><pre class="programlisting">  git-buildpackage \
+      --git-builder="pdebuild --debbuildopts '-I.git -i\.git -uc -us'" \
+      --git-cleaner="fakeroot debian/rules clean"
+  </pre><p>
+          </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm206"></a>Patches</h3></div></div></div><p>
+        We have not yet decided on how to deal with patches in upstream
+        (this topic is under discussion). Possibilities include direct
+        commits in the <span class="emphasis"><em>master</em></span> branch, use
+        of <a class="ulink" href="http://repo.or.cz/w/topgit.git" target="_top">TopGit</a>
+        and quilt-serialized patches, and raw quilt or dpatch.
+      </p><div class="section"><div class="titlepage"><div><div><h4 class="title"><a id="idm211"></a>Quilt-serialized patches</h4></div></div></div><p>
+          Patches can be serialized using Git. Two tools are used to
+          apply and save the patches
+          in <span class="command"><strong>debian/patches/series</strong></span>.
+
+          </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p><span class="command"><strong>dom-apply-patches</strong></span>: Creates
+                the branch <span class="command"><strong>patch-queue</strong></span> and checkout
+                it. Then, it applies all patches listed in
+                <span class="command"><strong>debian/patches/series</strong></span>.
+              </p></li><li class="listitem"><p><span class="command"><strong>dom-save-patches</strong></span>:
+
+                </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: circle; "><li class="listitem"><p>Move back to branch <span class="command"><strong>master</strong></span></p></li><li class="listitem"><p>Save all patches present in branch
+                      <span class="command"><strong>patch-queue</strong></span> (where each commit
+                      represents a patch to upstream) in
+                      <span class="command"><strong>debian/patches/</strong></span>
+                    </p></li><li class="listitem"><p>Update <span class="command"><strong>debian/patches/series</strong></span>
+                    </p></li><li class="listitem"><p>Remove branch <span class="command"><strong>patch-queue</strong></span></p></li></ul></div><p>
+
+              </p></li></ul></div><p>
+        </p><p>
+          The branch <span class="command"><strong>patch-queue</strong></span> is used only
+          locally and should never be pushed.
+        </p></div></div></div><div class="section"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="idm240"></a>Using the SVN repository</h2></div></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm242"></a>Use SVN and let your users know about it</h3></div></div></div><p>
+      (Hopefully) All OCaml-related Debian packages are maintained using a
+      centralized <a class="ulink" href="http://subversion.tigris.org/" target="_top">Subversion</a>
+      (<acronym class="acronym">SVN</acronym> for short) repository. This practice reduce the
+      efforts needed to contribute work inside The Debian OCaml Task Force and, in case of
+      need, provides a place where to massively perform changes to all
+      OCaml-related Debian packages.
+    </p><p>
+      Nonetheless, Debian users can benefit knowing we are using a SVN
+      repository (they can for instance subscribe to the RSS feed for changes
+      or have a place where to look for finding patches corresponding to bugs
+      tagged "pending" in the BTS).
+    </p><p>
+      For this reason <span class="emphasis"><em>it is recommended to add the
+        <code class="code">Vcs-Svn</code> and <code class="code">Vcs-Browser</code> fields to the
+        <code class="filename">debian/control</code> of packages maintained in
+        The Debian OCaml Task Force SVN repository</em></span>. Its name specifies that we are
+      using Subversion as our Version Control System (<acronym class="acronym">VCS</acronym>);
+      their values are the URLs pointing to the package's trunk directory and to
+      a browsable view of the same directory. See <a class="ulink" href="http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=391023" target="_top">Bug
+        #391023</a> (which contains the forthcoming text for the Debian
+      Developer's Reference) for more information about these fields.
+    </p><p>
+      The general scheme for using the fields are thus:
+      </p><pre class="programlisting">
+    Vcs-Svn: svn://svn.debian.org/svn/pkg-ocaml-maint/trunk/packages/<span class="emphasis"><em>PACKAGE_NAME</em></span>
+    Vcs-Browser: http://svn.debian.org/wsvn/pkg-ocaml-maint/trunk/packages/<span class="emphasis"><em>PACKAGE_NAME</em></span>/trunk/
+      </pre><p>
+      </p><div class="example"><a id="idm259"></a><p class="title"><strong>Example 3.2. Usage example of the Vcs-* fields, from the
+          <span class="application">findlib</span> package
+        </strong></p><div class="example-contents"><pre class="programlisting">
+    Source: findlib
+    Section: devel
+    Priority: optional
+    Maintainer: Stefano Zacchiroli &lt;zack@debian.org&gt;
+    Build-Depends: debhelper (&gt;&gt; 4.0.0), ocaml (&gt;= 3.09.2), m4, gawk | awk, dpatch, cdbs
+    Standards-Version: 3.7.2
+    <span class="emphasis"><em>Vcs-Svn: svn://svn.debian.org/svn/pkg-ocaml-maint/trunk/packages/findlib</em></span>
+    <span class="emphasis"><em>Vcs-Browser: http://svn.debian.org/wsvn/pkg-ocaml-maint/trunk/packages/findlib/trunk/</em></span>
+
+    Package: ocaml-findlib
+    Section: devel
+    Architecture: any
+    Depends: ocaml-nox-${F:OCamlABI}, ${shlibs:Depends}, ${misc:Depends}
+    Description: Management tool for OCaml programming language libraries
+    ...
+        </pre></div></div><p><br class="example-break" />
+    </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm265"></a>How to obtain a copy of the SVN repository</h3></div></div></div><p>
+        You can obtain a copy of debian-ocaml-maint SVN repository by
+        </p><pre class="programlisting">
+    svn co svn+ssh://svn.debian.org/svn/pkg-ocaml-maint
+        </pre><p>
+        You must be member of the
+        <a class="ulink" href="http://pkg-ocaml-maint.alioth.debian.org/" target="_top">Debian
+        OCaml Task Force</a> in order to have write access to the repository. 
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm270"></a>Structure of the SVN repository</h3></div></div></div><p>
+          We keep all files of the debian subdirectory under SVN control, and
+          upstream only as a compressed tarball. The rationale behind this is
+          that changes to upstream files should be managed by the <span class="application">dpatch</span> patch
+          manager. Hence, all the diffs to upstream files are kept in a
+          subdirectory of <code class="filename">debian/</code>, and it is not necessary to manage upstream on
+          file-by-file basis.
+      </p><p>
+          The structure of the pkg-ocaml-maint SVN repository is as follows, where
+          generic names are indicated in square brackets <code class="varname">[ .. ]</code>, and where the
+          contents of subdirectories not directly relevant for package management
+          are not detailed:
+          </p><pre class="programlisting">
+   tags
+     packages
+       [package1]
+         [version1]
+         [version2]
+         ...
+       [package2]
+         [version1]
+         ...
+       ...
+     projects
+   test
+   trunk
+     packages
+       [package1]
+         trunk
+           debian
+         tarballs
+           [upstream-tarball-version1]
+           [upstream-tarball-version2]
+           ...
+       [package2]
+       ...
+     policy
+     projects
+     tools
+          </pre><p>
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm278"></a>How to add a new package to the SVN repository</h3></div></div></div><p>
+          Place yourself in the directory <code class="filename">trunk/packages</code> of your working copy of
+          the SVN repository. Create a directory with the same name as your
+          source package (let's say, my-package), and subdirectories <code class="filename">tarballs</code>
+          and <code class="filename">trunk</code>.  Put the current upstream tarball in <code class="filename">tarballs</code>, and the
+          current debian directory with all its relevant files in <code class="filename">trunk</code>. This
+          should now look like this:
+          </p><pre class="programlisting">
+   trunk/packages/my_package
+     tarballs
+       my_package_1.2.3.orig.tar.gz
+     trunk
+       debian
+         changelog
+         control
+         copyright
+         patches
+           00_list
+           01_patch1.dpatch
+           ...
+         ...
+         </pre><p>
+     </p><p>
+         If everything is in order you can do a <span class="command"><strong>svn add my_package</strong></span> from the <code class="filename">trunk/packages</code> directory, and eventually <span class="command"><strong>svn commit</strong></span>.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm291"></a>How to set up your package for use with <span class="application">svn-buildpackage</span></h3></div></div></div><p>
+          Please see the <span class="application">svn-buildpackage</span> documentation for complete
+          information. The important issues here are:
+          </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>
+                      Since we keep upstream as a tarball we have to use <span class="application">svn-buildpackage</span> in
+                      so-called merge mode. This means that, before compiling the package,
+                      the debianized source tree is constructed by untarring the orig tarball, and then merging the contents of the trunk subdirectory in it.
+                  </p></li><li class="listitem"><p>
+                      The structure of our SVN repository is not among the default structures
+                      of <span class="application">svn-buildpackage</span>. Hence, we have to override the default location of some
+                      directories.
+                  </p></li></ul></div><p>
+      </p><p>
+          Place yourself in <code class="filename">trunk/packages/my_packages/trunk</code>, and do the following:
+          <span class="command"><strong>svn propset mergeWithUpstream 1 debian</strong></span>.
+          This registers the property "mergeWithUpstream" with the current
+          directory, such that <span class="application">svn-buildpackage</span> knows
+          that it has to use merge mode as explained above.
+      </p><p>
+          Create a file <code class="filename">debian/svn-deblayout</code> with the following contents:
+          </p><pre class="programlisting">
+  tagsUrl=svn+ssh://svn.debian.org/svn/pkg-ocaml-maint/tags/packages/my_package
+          </pre><p>
+      </p><p>
+          Remember that "my_package" has to be replaced by the name of your
+          actual package. <span class="application">svn-buildpackage</span> will not include this file in the
+          source package when actually building the package.
+      </p><p>
+          If you tried <span class="application">svn-buildpackage</span> before writing your <code class="filename">debian/svn-deblayout</code> remember
+          to delete <code class="filename">.svn/deb-layout</code>, since <span class="application">svn-buildpackages</span> caches here the content
+          of <code class="filename">svn-deblayout</code> (that would be empty in this case) and will ignore
+          your <code class="filename">debian/svn-deblayout</code>.
+      </p></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm319"></a>How to build a package with <span class="application">svn-buildpackage</span></h3></div></div></div><p>
+          Please refer to the <span class="application">svn-builpackage</span> documentation for more complete
+          information. Here is just a quick guide.
+      </p><p>
+          All options, except those starting on <code class="option">--svn</code>, are passed to
+          <span class="application">dpkg-buildpackage</span>. Hence, basic usage should be something like this
+          (from the <code class="filename">trunk/packages/my_package/trunk</code> directory): <span class="command"><strong>svn-buildpackage -rfakeroot -uc -us</strong></span>.
+      </p><p>
+        <span class="application">svn-buildpackage</span> will complain when your copy
+        of the debian directory is not in sync with the repository. You may use
+        the option <code class="option">--svn-ignore-new</code> to override this behaviour.
+        The package will be build in the directory
+        <code class="filename">../build-area</code>.
+      </p><p>
+          If your package is ready for upload you may use the <code class="option">--svn-tag</code> option
+          for the final build. This will put a tag in the svn-repository on the
+          current version, and add a new entry in the changlog to start working
+          on the upcomming next version: <span class="command"><strong>svn-buildpackage --svn-tag</strong></span>.
+          Provided you have commited all your changes to the svn repository, this
+          will after a successful build of the package create a tag for the current
+          version in <code class="filename">tags/packages/my_package</code>. The tagging is done directly in the
+          SVN repository.
+      </p><div class="tip" style="margin-left: 0.5in; margin-right: 0.5in;"><h3 class="title">Tip</h3><p>
+            Some useful aliases taken from the
+            <span class="application">svn-buildpackage</span> HOWTO:
+              </p><pre class="programlisting">
+  alias svn-b='svn-buildpackage -rfakeroot --svn-dont-clean -us -uc --svn-ignore'
+  alias svn-bt='svn-buildpackage -rfakeroot --svn-lintian --svn-dont-clean --svn-tag'
+              </pre><p>
+          </p><p>
+              The former (<span class="command"><strong>svn-b</strong></span>) is to be used for test builds, while you are
+              working on your package; while the latter (<span class="command"><strong>svn-bt</strong></span>) is to be used at
+              the end, after you commit your changes and just before uploading a new
+              version of the package to the debian archive.
+          </p><p>
+              Adding -k&lt;your gpg id&gt; to the svn-bt alias may also be useful when working on
+              collaboratively maintained packages:
+              </p><pre class="programlisting">
+  alias svn-bt='svn-buildpackage -rfakeroot -k&lt;gpgid&gt; --svn-lintian --svn-dont-clean --svn-tag'
+              </pre><p>
+          </p></div></div><div class="section"><div class="titlepage"><div><div><h3 class="title"><a id="idm346"></a>dpatch</h3></div></div></div><p>
+          dpatch will work properly at package build time with the SVN
+          structure described above since all of the build process will be
+          carried out in a fresh directory. However, invoking
+          <code class="filename">debian/rules</code> with the "clean" target in
+          the <code class="filename">trunk/</code> directory will fail since
+          dpatch is unable to de-apply patches. Passing
+          <code class="option">--svn-dont-clean</code> to
+          <span class="application">svn-buildpackage</span> fixes this
+          misbehaviour (aliases suggested above already include this
+          flag).  </p><p>
+          If you want to use dpatch-edit-patch to handle patches, you will need to invoke
+          it in "debian only mode" (<code class="option">-b</code> flag, see man dpatch-edit-patch) and to tell him
+          where to find the upstream tarball. Adding the following line to your
+          <code class="filename">~/.dpatch.conf</code> will be enough:
+          </p><pre class="programlisting">
+  conf_origtargzpath=../tarballs
+          </pre><p>
+      </p></div></div></div><div class="chapter"><div class="titlepage"><div><div><h1 class="title"><a id="idm357"></a>Chapter 4. Transitions to new OCaml upstream versions</h1></div></div></div><p>TODO</p></div><div class="appendix"><div class="titlepage"><div><div><h1 class="title"><a id="resources"></a>Appendix A. The Debian OCaml Task Force resources</h1></div></div></div><p>
+      </p><div class="itemizedlist"><ul class="itemizedlist" style="list-style-type: disc; "><li class="listitem"><p>The Debian OCaml Task Force's website: 
+            <a class="ulink" href="http://pkg-ocaml-maint.alioth.debian.org/" target="_top">
+              http://pkg-ocaml-maint.alioth.debian.org/</a> (it's an 
+            <a class="ulink" href="http://alioth.debian.org/projects/pkg-ocaml-maint/" target="_top">
+              Alioth project</a>)</p></li><li class="listitem"><p>The Debian OCaml Task Force's mailing list: 
+            <a class="ulink" href="mailto:debian-ocaml-maint@lists.debian.org" target="_top">
+              debian-ocaml-maint@lists.debian.org</a> (
+            <a class="ulink" href="http://lists.debian.org/debian-ocaml-maint/" target="_top">
+              archives</a>)</p></li><li class="listitem"><p>The Debian OCaml Task Force wiki page
+            <a class="ulink" href="http://wiki.debian.org/Teams/OCamlTaskForce/" target="_top">
+              http://wiki.debian.org/Teams/OCamlTaskForce/</a></p></li></ul></div><p>
+  </p></div></div></body></html>

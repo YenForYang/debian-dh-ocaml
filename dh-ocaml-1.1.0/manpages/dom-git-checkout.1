@@ -1,0 +1,72 @@
+'\" t
+.\"     Title: \fBdom-git-checkout\fR
+.\"    Author: Mehdi Dogguy <mehdi@debian.org>
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: Jul 10, 2009
+.\"    Manual: User Commands
+.\"    Source: dh-ocaml
+.\"  Language: English
+.\"
+.TH "\FBDOM\-GIT\-CHECKOU" "1" "Jul 10, 2009" "dh\-ocaml" "User Commands"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+dom-git-checkout \- Checkout the Git repository of a pkg\-ocaml\-maint package
+.SH "SYNOPSIS"
+.HP \w'\fBdom\-git\-checkout\fR\ 'u
+\fBdom\-git\-checkout\fR pkg_name
+.SH "DESCRIPTION"
+.PP
+Checkout the git repository of a package belonging to the pkg\-ocaml\-maint project on alioth\&.debian\&.org\&. (pkg\-ocaml\-maint is a collaborative package maintenance project, aimed at maintaining packages related to the OCaml programming language\&.)
+.PP
+The package to be checked out is given as argument, using source package name\&.
+.PP
+After having cloned the remote repository, remote tracking is also setup for the
+\fBupstream\fR
+and
+\fBpristine\-tar\fR
+branches\&.
+.PP
+By default, SSH method is used to clone the package\*(Aqs repository from
+\fIgit\&.debian\&.org\fR\&. You may specify a username in your SSH\*(Aqs configuration file\&.
+.SH "OPTIONS"
+.PP
+\fB\-\-no\-ssh\fR
+.RS 4
+Use git protocol instead of git+ssh protocol\&.
+.RE
+.PP
+\fBpkg_name\fR
+.RS 4
+The name of the (source) package to checkout
+.RE
+.SH "SEE ALSO"
+.PP
+\fB dom-new-git-repo \fR(1)
+\fB ssh_config \fR(5)
+.SH "AUTHOR"
+.PP
+\fBMehdi Dogguy\fR <\&mehdi@debian\&.org\&>
+.RS 4
+.RE
+.SH "COPYRIGHT"
+.br
+Copyright \(co 2009 Mehdi Dogguy
+.br

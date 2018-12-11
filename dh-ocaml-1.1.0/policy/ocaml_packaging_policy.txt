@@ -1,0 +1,681 @@
+Debian OCaml Packaging Policy
+
+   The Debian OCaml Task Force
+
+   <debian-ocaml-maint@lists.debian.org>
+
+   Revision 0.8.0
+
+   Copyright © 2002-2015 Mehdi Dogguy, Stephane Glondu, Sylvain Le Gall,
+   Sven Luther, Samuel Mimram, Ralf Treinen, Stefano Zacchiroli
+
+   This manual is free software; you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by the
+   Free Software Foundation, either version 3 of the License, or (at your
+   option) any later version.
+
+   This is distributed in the hope that it will be useful, but WITHOUT ANY
+   WARRANTY; without even the implied warranty of MERCHANTABILITY or
+   FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
+   for more details.
+
+   A copy of the GNU General Public License is available as
+   /usr/share/common-licenses/GPL-3 on Debian GNU/Linux systems or on the
+   World Wide Web at The GNU Public Licence.
+     __________________________________________________________________
+
+   Table of Contents
+
+   Conventions used in this document
+   1. Generalities about OCaml packages in Debian
+
+        The name of the game
+        Bytecode and native code
+        Overview of the OCaml compilers
+
+              Bytecode and native code compilers
+              Files used and produced by the OCaml compilers
+
+        Building packages using OCaml
+
+              Findlib and ocamlfind
+              The OCaml system in Debian
+              Choosing the right build dependencies
+              Putting the right binary dependencies
+              Dh_ocaml
+
+        Integrating OCaml packages in Debian
+
+              Location of OCaml directories
+              Debian archive section
+              Documentation
+
+   2. Packaging OCaml programs
+
+        Creating packages for OCaml programs
+        Bytecode packages
+        Native versions of programs
+        Bytecode and native versions of programs
+
+   3. Packaging OCaml libraries
+
+        Creating packages for OCaml libraries
+        Paths for libraries
+        Providing META files
+        Camlp4/Camlp5
+        Documentation
+
+   A. Appendix
+
+        Locally installing OCaml programs and libraries
+
+   List of Tables
+
+   1.1. OCaml compilers
+
+   List of Examples
+
+   3.1. Dependency from a -dev package to its companion shared library
+          stub package (if any), from the pcre-ocaml package
+
+Conventions used in this document
+
+   [ocaml-version] stands for the current upstream version of the OCaml
+   system (for instance, 4.02.1).
+
+Chapter 1. Generalities about OCaml packages in Debian
+
+   Table of Contents
+
+   The name of the game
+   Bytecode and native code
+   Overview of the OCaml compilers
+
+        Bytecode and native code compilers
+        Files used and produced by the OCaml compilers
+
+   Building packages using OCaml
+
+        Findlib and ocamlfind
+        The OCaml system in Debian
+        Choosing the right build dependencies
+        Putting the right binary dependencies
+        Dh_ocaml
+
+   Integrating OCaml packages in Debian
+
+        Location of OCaml directories
+        Debian archive section
+        Documentation
+
+The name of the game
+
+   The correct name of the language is OCaml. Other
+   spellings/capitalizations like “Objective Caml”, “ocaml”, “OCAML”,
+   “O'Caml” should be avoided when talking about the OCaml project, the
+   system, or the programing language.
+
+Bytecode and native code
+
+   The OCaml compilers can produce two kinds of executables: bytecode and
+   native. Native executables are usual ELF executables produced for a
+   particular CPU architecture, while pure bytecode executables are
+   written in a language which can only be run on a OCaml bytecode
+   interpreter. A pure bytecode executable starts with a magic string
+   invoking the interpreter, so that bytecode executables can just be
+   invoked like native executables. There are also “custom” bytecode
+   executables, which embed a bytecode program along with a bytecode
+   interpreter; these files are ELF executables. OCaml compilers to native
+   code are not provided for every architecture. On a Debian system, the
+   list of architectures for which the currently installed version of the
+   OCaml system provides compilation to native code can be found in the
+   file /usr/lib/ocaml/native-archs.
+
+   Native executables are in general faster to execute than bytecode
+   executables since they are compiled specifically for an architecture.
+   Bytecode executables are smaller than native code executables. If
+   considering only one process the advantage in size is annihilated by
+   the need for the OCaml runtime system for executing bytecode, however
+   there is an advantage when running several bytecode processes in
+   parallel since the runtime system can then be shared.
+
+   Pure bytecode executables have the advantage of being portable, which
+   means that a pure bytecode executable can usually be run without having
+   to be recompiled on any architecture for which an OCaml bytecode
+   interpreter is available. For Debian, this has the advantage that
+   packages containing only bytecode executables have Architecture=all,
+   which reduces archive space and auto-builder load. It also reduces
+   download and installation size for users in case they install several
+   bytecode packages.
+
+   An important decision to take when building a Debian package is whether
+   to support bytecode, native code, or both. We aim to support
+   development both of bytecode and native code applications, hence
+   libraries should be distributed both in bytecode and native code (see
+   the section on library packaging). For packages containing executables,
+   the rule is:
+     * If the execution of the program requires a lot of CPU power then
+       the executables in the package should be compiled to native code on
+       architectures where this is possible, and to bytecode elsewhere.
+       Typical examples are coq, or edos-distcheck. See the section on
+       native code packages.
+     * If the execution of the program is very fast on typical application
+       cases then the program contained in the package should be compiled
+       to bytecode. Typical examples are hevea, or headache. See the
+       section on bytecode packages.
+     * Only in special cases, for instance when both versions provide
+       different features, should a package contain programs both compiled
+       to bytecode and native code. See the section on combined bytecode
+       and native code packages.
+
+Overview of the OCaml compilers
+
+Bytecode and native code compilers
+
+   The ocaml-native-compilers package contains the OCaml compiler
+   executables built in native mode: ocamlc.opt, which produces bytecode,
+   and ocamlopt.opt, which produces native code. Since the OCaml compilers
+   are themselves written in OCaml this package exists only on
+   architectures where compilation to native code is supported.
+
+   The ocaml-nox package contains the OCaml compiler executables built in
+   bytecode mode: ocamlc, which produces bytecode, and on architectures
+   where compilation to native code is supported the compiler ocamlopt,
+   which produces native code. It is important to understand that on
+   architectures where compilation to native code is supported both
+   packages contain compilers from OCaml to both bytecode and native code,
+   the difference lies in the nature (installation size and execution
+   speed) of the compiler executables.
+
+   Table 1.1. OCaml compilers
+                                    Compiles to bytecode Compiles to native code
+ Compiler executable in bytecode    ocamlc               ocamlopt
+ Compiler executable in native code ocamlc.opt           ocamlopt.opt
+
+   See the section called “Bytecode and native code” on a discussion
+   whether to produce native code or bytecode.
+
+Files used and produced by the OCaml compilers
+
+   The OCaml toolchain can produce or use the following kind of files:
+     * pure bytecode executables (they can be recognized since they start
+       with the shebang line #!/usr/bin/ocamlrun)
+     * bytecode executables linked in custom mode. They are generated by
+       ocamlc when the -custom flag is given at link time. Those
+       executables are in ELF format and include both the final bytecode
+       and the bytecode interpreter. The strip command should never be
+       invoked on them since it will remove the bytecode part. Bytecode
+       executables linked in custom mode are depreciated and should be
+       avoided.
+     * native executables (in ELF format)
+     * bytecode libraries (*.cma, *.a)
+     * native libraries (*.cmxa)
+     * shared libraries (for C bindings) (dll*.so, lib*.so)
+     * static libraries (for C bindings) (lib*.a)
+     * bytecode object files (*.cmo)
+     * native object files (*.cmx, *.o)
+     * native plugin object files (*.cmxs)
+     * configuration files for handling libraries with ocamlfind (META)
+
+Building packages using OCaml
+
+Findlib and ocamlfind
+
+   The Debian OCaml Task Force has chosen to fully support the findlib
+   library. This is a suite of tools and libraries that help to manage
+   OCaml libraries. This software is not specific to Debian and works on
+   all platforms where OCaml is available. Through the years, this has
+   become the de facto standard when relying on external libraries. The
+   main frontend is called ocamlfind and provided by the package
+   ocaml-findlib.
+
+   Even though compiling OCaml projects in Debian is still possible
+   without ocamlfind it is highly recommended to use it.
+
+The OCaml system in Debian
+
+   There are three categories of OCaml packages in Debian:
+     * Development packages contain OCaml objects required for the
+       development or compilation of OCaml programs, or specifically for
+       the creation of Debian packages containing OCaml programs.
+     * Runtime packages contain OCaml objects necessary to run compiled
+       programs. A runtime package is always associated with a development
+       package.
+     * Simple binary packages contain everything that does not fall into
+       the two former categories. This includes bytecode and native
+       executable of application programs, documentation, etc.
+
+   The ocaml package depends on all the basic packages needed to develop
+   programs with OCaml. More specifically, the packaging of OCaml is split
+   into smaller packages. The packages with suffix -nox contain libraries
+   that do not need the X Window system (i.e., for programs that don't use
+   the Graphics module). Here is the list of binary packages into which
+   the OCaml system is organized:
+    1. The ocaml and ocaml-nox packages contain the compiler and its
+       libraries. They can be both considered as development packages.
+    2. The ocaml-native-compilers package contains the OCaml compilers
+       built in native mode (ocamlc.opt and ocamlopt.opt).
+
+Note
+       The compilers themselves are built in native mode, nonetheless,
+       both compilers for compiling toward bytecode and native code are
+       contained in this package.
+    3. The ocaml-base and ocaml-base-nox packages contain the interpreter
+       and runtime libraries needed by bytecode programs compiled with
+       OCaml (in particular, the package ocaml-base-nox contains the
+       ocamlrun program). They can both be considered as runtime packages
+       associated to ocaml, resp. ocaml-nox.
+
+Note
+       ocaml-base-nox contains also OCaml interface objects *.cmi, which
+       are normally only in development packages because they are needed
+       to run the ocaml toplevel from the package ocaml-interp.
+    4. The ocaml-interp package contains the toplevel system for OCaml
+       (ocaml) which provides for an interactive interpreter of the
+       language.
+    5. The ocaml-mode package contains the OCaml Emacs mode. This is the
+       original Emacs mode provided with the OCaml upstream distribution,
+       not to be confused with the tuareg Emacs mode which is in the
+       package tuareg-mode.
+    6. The ocaml-source package contains the sources of the OCaml
+       compiler.
+    7. The ocaml-compiler-libs package contains some internal libraries of
+       the OCaml compiler (needed only in very rare cases, e.g. for
+       developing languages which reuse OCaml internals).
+
+   Since libraries produced by OCaml are binary incompatible when compiled
+   with different releases of OCaml, versioned virtual packages are also
+   provided by packages at items (1), (2), (6) and (7):
+   ocaml-[ocaml-version], ocaml-nox-[ocaml-version], etc.
+
+Choosing the right build dependencies
+
+   Compiling with native code versions of the compilers is generally
+   faster than with compilers in bytecode. Unfortunately, the
+   ocaml-native-compilers package is not available on every architecture.
+   Packages should therefore never depend directly on this package. In
+   order to build big programs and benefit from this natively built
+   compiler, packages should depend on ocaml-best-compilers which itself
+   depends on ocaml-native-compilers where available and on ocaml
+   elsewhere. Since it is a virtual package, it cannot be a versioned
+   dependency. The version dependency should thus be carried by the ocaml
+   dependency. Note that dependency on ocaml-best-compilers is only
+   necessary for really big programs for which compilation takes a lot of
+   resources. For most small programs the compilers from the ocaml-nox
+   package are perfectly sufficient, and faster to install in a build
+   environment than compiler executables in native code.
+
+Putting the right binary dependencies
+
+   Bytecode is specific to an upstream version of the OCaml system.
+   Therefore, any package containing bytecode has to depend directly or
+   indirectly on the packages providing the OCaml runtime system in
+   precisely the version for which it was compiled (for instance,
+   ocaml-base-[ocaml-version].) This is in particular the case for
+   bytecode programs, but it is also the case for native code programs on
+   the architectures on which there is no native code OCaml compiler, and
+   on which the program will be actually compiled to bytecode (see the
+   section on packaging native code programs). The exact dependencies of
+   libraries packages are discussed in the chapter on library packaging.
+
+   In order for a package to be easily rebuild, or even binNMUed, in case
+   of a transition from one OCaml version to another, these dependencies
+   must not be hardcoded in debian/control. Instead, substitution
+   variables must be used which are instantiated from the debian/rules
+   file. See the discussion on build systems in the Debian OCaml
+   Developers Reference for a discussion how this can be achieved.
+
+Dh_ocaml
+
+   The Debian OCaml Task Force has created a system to compute
+   dependencies between OCaml packages and to ensure type-safe linking. It
+   requires to use new substitution variables in debian/control:
+     * Use the ${ocaml:Depends} substitution variable in the field
+       Depends.
+     * Add a field Provides: ${ocaml:Provides} in development and runtime
+       packages.
+
+   More detailed information about this work can be found here.
+
+Integrating OCaml packages in Debian
+
+Location of OCaml directories
+
+   The root of all installed OCaml libraries is the OCaml standard library
+   directory, which is /usr/lib/ocaml. This location can be obtained from
+   the OCaml compiler by invoking it as ocamlc -where.
+
+Debian archive section
+
+   Packages intended for the development of OCaml programs or packages, as
+   well as packages necessary for the execution of OCaml code (like
+   runtime systems or libraries) should have their section set to ocaml.
+
+   End user applications that are not specifically aiming at OCaml
+   development or execution support but just happen to be implemented in
+   OCaml should have their section set according to their application
+   domain (games, science, etc.). General development tools that are not
+   specific to OCaml development go into section devel (example:
+   headache).
+
+Documentation
+
+   Documentation relevant to programming in OCaml should be registered
+   with doc-base in Section Programming/OCaml. This is the case for API
+   documentation generated using ocamldoc. See the section on generating
+   documentation.
+
+Chapter 2. Packaging OCaml programs
+
+   Table of Contents
+
+   Creating packages for OCaml programs
+   Bytecode packages
+   Native versions of programs
+   Bytecode and native versions of programs
+
+Creating packages for OCaml programs
+
+   The source package should, if possible, use the name of the upstream
+   package without modifications.
+
+   Packages containing executables (as opposed to libraries) may be
+   produced by compiling to bytecode, native code, or both. See this
+   discussion of which mode to choose.
+
+   Package containing only bytecode executable, native executable or data
+   are simple binary package, as explained previously.
+
+Bytecode packages
+
+   A bytecode package has all its binaries compiled into bytecode. It
+   depends on a package containing the OCaml runtime system. As a
+   consequence, such a package has its architecture field set to all.
+
+   All bytecode executables should be linked dynamically against the
+   shared libraries for C bindings, to not bloat the archive. That said,
+   upstream authors often favor statically linked bytecode executables
+   (ocamlc option -custom), because in this case they don't need to worry
+   about the presence of the dll stub libraries. This is not a valid
+   reason to use statically linked bytecode in a Debian package where
+   package dependencies can fix this problem.
+
+   A bytecode package must depend on the runtime package that is required
+   to run it. Typically, it should depend on
+   ocaml-base-nox-[ocaml-version] (or ocaml-base-[ocaml-version], if if
+   the program uses the Graphics module). It can also depends on the
+   virtual libXXX-ocaml-byte-ABCD provided by the runtime package
+   libXXX-ocaml (see the section on binary dependencies).
+
+   A bytecode package must build-depend-indep on ocaml-nox (or ocaml if
+   the program uses the Graphics module).
+
+   Bytecode programs which are compiled by ocamlc -custom must not be
+   stripped. In particular, their package should be excluded from the
+   dh_strip script. When compiled this way, an ELF executable is generated
+   containing the ocaml interpreter, and the bytecode of the program in a
+   section which is removed when the program is stripped. For more
+   information, see the bug 256900. Custom bytecode executable is a
+   deprecated feature of OCaml -- for now they still exist but should be
+   avoided.
+
+   Bytecode programs should not be compiled for debugging, i.e. they
+   should not be compiled using the -g option to ocamlc.
+
+Native versions of programs
+
+   Native OCaml compilers are not available on all architecures. For
+   architectures missing native compiler, a bytecode version of the
+   program should be provided. Native code packages are specific to an
+   architecture, that is they have Architecture=any in the source package.
+
+   The debian/rules file should build the native code executable if
+   supported on the architecture it is built on, and fall back to building
+   the bytecode version if no working native code compiler is available.
+   As a consequence, the rules of the section called “Bytecode packages”
+   also apply here.
+
+   It is safe to consider that detection of native architecture means
+   availability of ocamlopt or ocamlopt.opt when building.
+
+Bytecode and native versions of programs
+
+   This should be done only under exceptional circumstances. Packages
+   providing both native and bytecode versions of a program prog usually
+   name them respectively prog.opt and prog.byte and provide a symbolic
+   link prog to the best available version (generally prog.opt). Please
+   consult the rules of the section called “Bytecode packages” and the
+   section called “Native versions of programs”.
+
+Chapter 3. Packaging OCaml libraries
+
+   Table of Contents
+
+   Creating packages for OCaml libraries
+   Paths for libraries
+   Providing META files
+   Camlp4/Camlp5
+   Documentation
+
+Creating packages for OCaml libraries
+
+   A package which provides an OCaml library called xxx should be split as
+   follows:
+     * For libraries which are not purely programmed in OCaml (e.g. C
+       bindings), libxxx-ocaml should provide the shared library stubs
+       (dll*.so), and all other stuff needed to run a bytecode executable
+       that links into this library. It should depend on
+       ocaml-base-[ocaml-version] (or ocaml-base-nox-[ocaml-version]) as
+       well as any other library needed. The versioned dependency on
+       ocaml-base is important since libraries are binary incompatible
+       between releases of OCaml.
+       libxxx-ocaml packages should be in Section: ocaml.
+       If the library provides native plugins (*.cmxs) or is meant to be
+       dynamically loaded using the Dynlink library, those plugins,
+       relevant *.cmo or *.cma files, and the META file referencing them
+       should also be provided by this runtime package.
+     * libxxx-ocaml-dev should provide the rest of the library package, in
+       fact anything needed to develop programs using the library. If the
+       library uses other libraries or C libraries then this package
+       should depend on them.
+       libxxx-ocaml-dev should depend on its companion libxxx-ocaml
+       package (if any). The reason is that at compile time the OCaml
+       compiler will try to load the shared library stubs, aborting the
+       compilation in case of failure. Hence the development package is
+       useless if the corresponding stub package is missing. To ensure
+       compatibility the dependency among the two packages should be
+       strictly versioned. In order for the resulting packages to be
+       binNMU safe this requirement states that the dependency should make
+       use of a ${binary:Version} substitution variable.
+       Example 3.1. Dependency from a -dev package to its companion shared
+       library stub package (if any), from the pcre-ocaml package
+  Package: libpcre-ocaml
+  Architecture: any
+  Section: ocaml
+  Depends: ocaml-base-nox-[ocaml-version], ${shlibs:Depends}, ${misc:Depends}
+  ...
+
+  Package: libpcre-ocaml-dev
+  Architecture: any
+  Section: ocaml
+  Depends: ocaml-nox-[ocaml-version], libpcre3-dev (>= 4.5), libpcre-ocaml (= ${
+binary:Version}), ${misc:Depends}
+  Suggests: ocaml-findlib (>= 1.1)
+  ...
+
+       libxxx-ocaml-dev packages should be in Section: ocaml
+       All OCaml bytecode libraries (*.cma) and bytecode object files
+       (*.cmo) should be compiled for debugging, i.e. they should be
+       compiled passing the -g option to ocamlc (or ocamlc.opt).
+
+   Optionally, two other packages may be created:
+     * libxxx-ocaml-bin may include binaries provided by the library
+       source package if they are numerous. This package should conform
+       with the same regulations as other packages providing ocaml
+       programs. It is only needed to split off this package if there is a
+       significant number of programs included in the library, if not, the
+       programs should go into libxxx-ocaml-dev.
+     * libxxx-ocaml-doc may include any kind of documentation provided by
+       the library source package or as separate documentation. Again, if
+       there is only little documentation, they should go with the -dev
+       package.
+
+   It is recommended that libraries use the -pack option to pack all the
+   modules provided by the library into one module. We don't think
+   upstream libraries will be moving to this scheme anytime soon (unless
+   we actively lobby for it) so this is just a recommendation for now.
+
+   It is recommended that each library package ships a META file in order
+   to make the library usable via ocamlfind (see the Debian package
+   ocaml-findlib). See the section called “Providing META files” for more
+   information on this.
+
+Paths for libraries
+
+   Libraries should be installed in /usr/lib/ocaml/ or in a subdirectory
+   of this directory. This includes in particular bytecode libraries
+   (*.cma), native libraries (*.cmxa, *.a), native plugins (*.cmxs),
+   bytecode object files (*.cmo), native object files (*.cmx, *.o), static
+   libraries (*.a) and META files. The only exception to this rule is for
+   shared libraries (dll*.so) which should be installed in
+   /usr/lib/ocaml/stublibs, as can it be seen in the
+   /usr/lib/ocaml/ld.conf file.
+
+   If upstream developers already use a subdirectory of the OCaml standard
+   library path then this path should be preserved in the Debian package
+   but made relative to the standard library path of OCaml. Before using
+   the provided subdirectory, packagers should obviously check if there is
+   no subdirectory name clash with another OCaml library.
+
+   If upstream developers do not use this scheme then packagers are
+   encouraged not to install this library in the standard library
+   directory. They should create at least a subdirectory per source
+   package (in order to avoid name clashes). Packagers should also
+   consider to do a larger separation by creating a subdirectory per
+   binary package (in order to avoid META name clash). A suggested rule to
+   choose the name for this subdirectory is to use either the package name
+   provided by the META of the upstream, or the name of the library
+   itself.
+
+Providing META files
+
+   The ocaml-findlib provides a tool (called ocamlfind) to handle OCaml
+   libraries and store information about libraries dependencies, compiler
+   flags, linking options, etc. Meta informations regarding a library are
+   contained in files (usually one for each library), named META files,
+   contained in the library directory. The distribution of META files is
+   the best way to make more easy to use the Debian-specific organization
+   of libraries. Packages distributing META files should suggest the use
+   of ocamlfind, that is have a Suggest: ocaml-findlib.
+
+   By default, ocamlfind will look for META in this order:
+     * /usr/lib/ocaml/METAS/
+     * /usr/lib/ocaml/package/
+
+   If a library package creates its own subdirectory
+   /usr/lib/ocaml/package/ then the META file should be stored in that
+   directory.
+
+   The naming scheme of META is pretty simple.
+     * If the META file is placed in the subdirectory of the package then
+       it should be called META.
+     * If the META file is placed in /usr/lib/ocaml/METAS/ then it should
+       be called META.packagename, where packagename is the name of the
+       subdirectory where the library is stored.
+
+   For example, the META file for the lablgtk library is named META and
+   has path /usr/lib/ocaml/lablgtk/META, where /usr/lib/ocaml is the main
+   OCaml installation directory and lablgtk is the lablgtk library
+   directory.
+
+   If upstream doesn't provide a META then packagers are encouraged to
+   create one. In this case, the META file should contain a comment like
+   this, so that developers will know that they shouldn't count on the
+   availability of a META file on non-Debian machines:
+        # This META file is delivered by the Debian distribution.
+
+   Furthermore, the META file should be sent to the upstream authors in
+   order to have it included in future versions of the upstream source.
+   For more information about META files see the Findlib manual, at the
+   several META files provided by other packages (e.g. lablgtk, pxp, pcre,
+   netstring, lablgl, ...) or ask on the debian-ocaml-maint mailing list
+   for help.
+
+Camlp4/Camlp5
+
+   Actually, Camlp4 extensions should be processed just like standard
+   OCaml libraries. In particular, they should provide a META file. The
+   syntax extension should be contained in a syntax sub package.
+
+   The naming convention of the package is to use the same naming as with
+   standard package, replacing -ocaml- by the syntax extension name,
+   -camlp4-.
+
+   If a package contains at the same time syntax extension and libraries
+   then it is up to the maintainer to choose the most relevant name for
+   the package. Whatever the name chosen for the package, the other name
+   should be a Provide of the package.
+
+   For example, consider the package sexplib310. It provides a syntax
+   extension and a library, which is the runtime support of the additional
+   function generated by the syntax extension. Since the most common use
+   of sexplib310 is through its syntax extension, the package is name
+   libsexplib-camlp4-dev and it also provide libsexplib-ocaml-dev.
+
+   Camlp5 is an alternate pretty-printer and preprocessor for OCaml (which
+   is compatible with pre-3.10.0 version). Syntax extension are handled
+   through exactly the same scheme as for Camlp4 except that package name
+   use -camlp5- rather than -camlp4-.
+
+Documentation
+
+   The documentation is a joint effort of The Debian OCaml Task Force and
+   upstream. There are many ways to have documentation:
+     * header files (*.mli),
+     * source files (*.ml),
+     * specific documentation provided by the upstream,
+     * OCamldoc generated documentation.
+
+   This documentation should be browsable by different means, from the
+   most simple to the most complex one. At least, they should all be
+   readable with a simple text editor. Specific and ocamldoc generated
+   documentations should be provided in HTML format.
+
+   You can generate ocamldoc-specific documentation by using the -dump
+   option of this command. By using this, you dump the intermediate
+   representation of the document that will be generated by ocamldoc. This
+   can be used to generate HTML documentation and manpages, by reloading
+   this file (using -load).
+
+Appendix A. Appendix
+
+   Table of Contents
+
+   Locally installing OCaml programs and libraries
+
+Locally installing OCaml programs and libraries
+
+   Locally installed files are files that are installed directly by the
+   system administrator, in contrast to files installed through Debian
+   packages. Installation and use of locally installed OCaml related
+   programs is out of the scope of this document. However, in order to
+   have it work with a standard Debian installation, a local system
+   administrator should follow these guidelines:
+     * Executable files should be installed in /usr/local/bin.
+     * Shared libraries (for C bindings) should be installed in
+       /usr/local/lib/ocaml/stublibs/
+     * Basically, every other file should be installed in
+       /usr/local/lib/ocaml/. This includes in particular bytecode
+       libraries (*.cma), native libraries (*.cmxa), bytecode object files
+       (*.cmo), native object files (*.cmx), native plugin object files
+       (*.cmxs), static libraries (*.a) and META files.
+
+   The default configuration of ocamlfind (the OCaml library manager
+   recommended in Debian) first looks for a local installation of
+   libraries and then for libraries installed by Debian packages.
+
+Warning
+
+   The + preceding any library in the -I of ocamlc or ocamlopt won't be
+   expanded to the local standard library path. You need to specify the
+   path entirely.

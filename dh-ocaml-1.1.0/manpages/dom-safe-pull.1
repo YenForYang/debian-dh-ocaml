@@ -1,0 +1,44 @@
+'\" t
+.\"     Title: \fBdom-safe-pull\fR
+.\"    Author: Mehdi Dogguy <mehdi@debian.org>
+.\" Generator: DocBook XSL Stylesheets v1.79.1 <http://docbook.sf.net/>
+.\"      Date: Jul 10, 2009
+.\"    Manual: User Commands
+.\"    Source: dh-ocaml
+.\"  Language: English
+.\"
+.TH "\FBDOM\-SAFE\-PULL\F" "1" "Jul 10, 2009" "dh\-ocaml" "User Commands"
+.\" -----------------------------------------------------------------
+.\" * Define some portability stuff
+.\" -----------------------------------------------------------------
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.\" http://bugs.debian.org/507673
+.\" http://lists.gnu.org/archive/html/groff/2009-02/msg00013.html
+.\" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.\" -----------------------------------------------------------------
+.\" * set default formatting
+.\" -----------------------------------------------------------------
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.\" -----------------------------------------------------------------
+.\" * MAIN CONTENT STARTS HERE *
+.\" -----------------------------------------------------------------
+.SH "NAME"
+dom-safe-pull \- Safely pull changes from Git remote
+.SH "DESCRIPTION"
+.PP
+\fBdom\-safe\-pull\fR
+looks for tracked branches and fetches changes from remote\&. For each branch, if the changes are fast\-forward then it will merge the local branch with the corresponding remote branch\&.
+.SH "AUTHOR"
+.PP
+\fBMehdi Dogguy\fR <\&mehdi@debian\&.org\&>
+.RS 4
+.RE
+.SH "COPYRIGHT"
+.br
+Copyright \(co 2009 Mehdi Dogguy
+.br
